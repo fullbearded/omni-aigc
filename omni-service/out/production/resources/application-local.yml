@@ -1,0 +1,14 @@
+app-config:
+  env: local
+  proxy:
+    host: 127.0.0.1
+    port: 1087
+  apiKey: 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
+  apiKeyList: [ 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 ]
+  apiHost: https://api.openai.com
+
+logging:
+  level:
+    root: INFO
+    com:
+      opaigc: DEBUG
