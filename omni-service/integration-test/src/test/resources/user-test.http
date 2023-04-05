@@ -1,0 +1,11 @@
+### 创建用户
+
+POST {{host}}/api/dashboard/billing/credit
+Accept: application/json
+Content-Type: application/json
+
+{
+	"key": "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"
+}
+> reponse-check.js
+
