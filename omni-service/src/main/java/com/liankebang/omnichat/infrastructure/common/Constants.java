@@ -13,29 +13,32 @@ public class Constants {
 
 	public static final String AUTHORIZATION_BEARER_PREFIX = "Bearer ";
 
+	public static final String USER_CODE_KEY = "code";
+
 	public static final String LOGIN_LOCKED_TIMES = "%s.login.times.%s";
 
 	public static final String LOGIN_TOKEN = "%s.login.token.%s";
 
 	public static final String LOGIN_LOCKED_VALUE = "login.locked";
 
-	public static final String USER_LOGIN_PATH = "/api/login";
+	public static final String USER_LOGIN_PATH = "/api/auth/login";
+	public static final String USER_LOGOUT_PATH = "/api/auth/logout";
 
 	public static final String[] STATIC_WHITELIST = {
-		"/*.html", "/*.css", "/*.js", "/*.png", "/**/*.html", "/**/*.css", "/**/*.js", "/**/*.png",
-		"/**/*.woff", "/**/*.ttf", "/**.json",
+		"/*.html", "/*.css", "/*.js", "/*.png", "/*/*.html", "/*/*.css", "/*/*.js", "/*/*.png",
+		"/*/*.woff", "/*/*.ttf", "/*.json",
 	};
 
 	public static final String[] SWAGGER_WHITELIST = {
 		"/v2/api-docs",
 		"/swagger-resources",
-		"/swagger-resources/**",
+		"/swagger-resources/*",
 		"/swagger-ui.html",
 	};
 
 	public static final String[] URI_WHITELIST = {
-		"/private/**",
-		"/api/**"
+		"/private/*",
+		"/api/chat/stream"
 	};
 
 }

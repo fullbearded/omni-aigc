@@ -39,6 +39,7 @@ public enum CommonResponseCode implements ApiResponseCode {
 	ACCOUNT_BANNED("200003", "账户被禁用", UNAUTHORIZED.value()),
 	LOGIN_EXPIRED("200004", "登录已过期，请重新登录！", FORBIDDEN.value()),
 	USER_NOT_FOUND("200005", "用户未找到", NOT_FOUND.value()),
+	ACCOUNT_LOGIN_OTHER_DEVICE("200006", "账号在其他设备登录", UNAUTHORIZED.value()),
 
 
 	// 业务类错误

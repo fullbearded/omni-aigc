@@ -28,7 +28,7 @@ public class LoginUserDto implements UserDetails {
 
 	private Long id;
 
-	private String userCode;
+	private String code;
 
 	private String username;
 

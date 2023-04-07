@@ -3,7 +3,7 @@
 -- ----------------------------
 CREATE TABLE `users`
 (
-	`id`              INT(11)      NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+	`id`              BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT 'ID',
 	`code`            VARCHAR(32)  NOT NULL DEFAULT '' COMMENT '用户编码',
 	`username`        VARCHAR(100) NOT NULL DEFAULT '' COMMENT '用户名',
 	`email`           VARCHAR(50)  NOT NULL DEFAULT '' COMMENT '用户邮箱',
@@ -22,7 +22,6 @@ CREATE TABLE `users`
 	`created_by`      VARCHAR(64)           DEFAULT '' COMMENT '创建者',
 	`updated_at`      datetime(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改时间',
 	`updated_by`      VARCHAR(64)           DEFAULT '' COMMENT '更新者',
-	PRIMARY KEY (`id`),
 	UNIQUE KEY `users_user_code_udx` (`code`),
 	UNIQUE KEY `users_mobile_udx` (`mobile`)
 ) ENGINE = InnoDB

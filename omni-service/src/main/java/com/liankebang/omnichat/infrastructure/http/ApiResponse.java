@@ -32,7 +32,7 @@ public class ApiResponse<T> {
 	private T data;
 
 	public static ApiResponse success() {
-		return ApiResponse.builder().status(HttpStatus.OK.value()).build();
+		return ApiResponse.builder().status(HttpStatus.OK.value()).message(CommonResponseCode.OK.getMessage()).build();
 	}
 
 	public static <T> ApiResponse<T> success(T content) {

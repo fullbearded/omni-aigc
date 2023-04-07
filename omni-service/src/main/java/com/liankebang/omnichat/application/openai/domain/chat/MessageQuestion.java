@@ -1,6 +1,10 @@
 package com.liankebang.omnichat.application.openai.domain.chat;
 
+import com.liankebang.omnichat.application.openai.controller.OpenAiController;
+import com.liankebang.omnichat.application.openai.service.OpenAiService;
+
 import java.util.Date;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +23,12 @@ public class MessageQuestion {
 	private MessageType messageType;
 	private String message;
 	private Date date;
+	private List<OpenAiService.CompletionsRequest.Message> messages;
+
+	public MessageQuestion(MessageType messageType, List<OpenAiService.CompletionsRequest.Message> messages) {
+		this.messages = messages;
+		this.date = new Date();
+	}
 
 	public MessageQuestion(MessageType messageType, String message) {
 		this.messageType = messageType;

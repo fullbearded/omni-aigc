@@ -25,8 +25,8 @@ public class AccountSessionInterceptor implements HandlerInterceptor {
 		if (jwtTokenProvider.validateToken(token)) {
 			AccountSession accountSession = AccountSession.builder()
 				.username(jwtTokenProvider.getUsername(token))
+				.code(jwtTokenProvider.getUserCode(token))
 				.build();
-
 			return true;
 		} else {
 			return false;

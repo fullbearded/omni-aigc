@@ -3,6 +3,7 @@ package com.liankebang.omnichat.application.openai.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.MediaType;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSONObject;
 import com.liankebang.omnichat.application.openai.domain.chat.MessageType;
 import com.liankebang.omnichat.application.openai.service.OpenAiService;
+import com.liankebang.omnichat.infrastructure.auth.AccountSession;
 import com.liankebang.omnichat.infrastructure.http.ApiResponse;
 
 import jakarta.validation.Valid;
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,7 +30,6 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
-import jakarta.validation.constraints.NotBlank;
 
 /**
  * @author: Runner.dada
@@ -48,10 +50,14 @@ public class OpenAiController {
 	/**
 	 * Chat 流式返回
 	 */
-	@PostMapping(value = "/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	@CrossOrigin
-	public Flux<String> streamCompletions(@RequestBody CompletionsRequest req) {
-		return openAiService.chatSend(MessageType.TEXT, req.getPrompt(), req.getUser());
+	@PostMapping(value = "/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE + ";charset=UTF-8")
+	@CrossOrigin(origins="*")
+	public Flux<String> streamCompletions(@RequestBody OpenAiService.CompletionsRequest req, AccountSession accountSession) {
+		if (Objects.isNull(req.getMessages()) || CollectionUtils.isEmpty(req.getMessages())) {
+			return openAiService.chatSend(MessageType.TEXT, req.getPrompt(), accountSession.getCode());
+		} else {
+			return openAiService.chatSend(MessageType.TEXT, req.getMessages(), accountSession.getCode());
+		}
 	}
 
 	@PostMapping("/dashboard/billing/credit")
@@ -79,14 +85,7 @@ public class OpenAiController {
 	}
 
 
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@Builder
-	public static class CompletionsRequest {
-		private String user;
-		private String prompt;
-	}
+
 
 	@Data
 	@NoArgsConstructor

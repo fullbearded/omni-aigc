@@ -1,0 +1,11 @@
+###
+
+POST {{host}}/api/login
+Accept: application/json
+Content-Type: application/json
+
+{
+	"username": "admin",
+	"password": "123456"
+}
+> reponse-check.js
