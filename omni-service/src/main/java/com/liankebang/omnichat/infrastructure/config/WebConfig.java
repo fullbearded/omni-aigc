@@ -1,10 +1,13 @@
 package com.liankebang.omnichat.infrastructure.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import com.liankebang.omnichat.infrastructure.auth.AccountSessionResolver;
+import com.liankebang.omnichat.infrastructure.filter.CharsetFilter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +29,7 @@ public class WebConfig extends WebMvcConfigurationSupport {
 		HandlerMethodArgumentResolver[] handlerMethodArgumentResolvers) {
 		this.handlerMethodArgumentResolvers = handlerMethodArgumentResolvers;
 	}
+
 
 	/**
 	 * 添加ArgumentResolver，Controller中直接获取参数

@@ -1,6 +1,7 @@
 package com.liankebang.omnichat.application.openai.service;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.liankebang.omnichat.application.openai.controller.OpenAiController;
 import com.liankebang.omnichat.application.openai.domain.chat.MessageType;
 import com.liankebang.omnichat.application.openai.listener.CompletedCallBack;
 
@@ -24,12 +25,34 @@ public interface OpenAiService extends CompletedCallBack {
 
 	Flux<String> chatSend(MessageType type, String content, String sessionId);
 
+	Flux<String> chatSend(MessageType type, List<CompletionsRequest.Message> messages, String sessionId);
+
 
 	CreditGrantsResponse creditGrants(String key);
 
 	ModerationData moderation(String prompt);
 
 	Mono<Boolean> checkContent(String prompt);
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Builder
+	class CompletionsRequest {
+		private String user;
+		private String prompt;
+		private List<Message> messages;
+
+		@Data
+		@NoArgsConstructor
+		@AllArgsConstructor
+		@Builder
+		public static class Message {
+			private String role;
+			private String content;
+		}
+
+	}
 
 	@Data
 	@Builder

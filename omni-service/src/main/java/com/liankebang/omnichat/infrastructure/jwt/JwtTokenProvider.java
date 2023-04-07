@@ -32,33 +32,30 @@ public class JwtTokenProvider {
 	@Value("${security.jwt.secret-key:secret-key}")
 	private String secretKey;
 
-	@Value("${security.jwt.expire-in:3600000}")
-	private long expireInMilliseconds = 360000;
+	/**
+	 * 24 hours, ms
+	 **/
+	@Value("${security.jwt.expire-in:86400000}")
+	private long expireInMilliseconds = 86400000;
 
 	public JwtTokenProvider() {
 
 	}
 
-	public String createToken(String username, List<Role> roles) {
+	public String createToken(String username, String userCode, List<Role> roles) {
 
 		Claims claims = Jwts.claims().setSubject(username);
-
+		claims.put(Constants.USER_CODE_KEY, userCode);
 		if (!Collections.isEmpty(roles)) {
 			// TODO: need add authorities
 			claims.put("authorities",
 				roles.stream().map(s -> new SimpleGrantedAuthority(null)).filter(
 					Objects::nonNull).collect(Collectors.toList()));
 		}
-		Date now = new Date();
-		Date validity = new Date(now.getTime() + expireInMilliseconds);
 
-		return Jwts.builder()
-			.setClaims(claims)
-			.setIssuedAt(now)
-			.setIssuer(Constants.COPYRIGHT)
-			.setExpiration(validity)
-			.signWith(SignatureAlgorithm.HS256, getSecretKey())
-			.compact();
+		return Jwts.builder().setClaims(claims).setSubject(username).setIssuedAt(new Date(System.currentTimeMillis()))
+			.setExpiration(new Date(System.currentTimeMillis() + expireInMilliseconds))
+			.signWith(SignatureAlgorithm.HS256, getSecretKey()).compact();
 	}
 
 	public String getSecretKey() {
@@ -68,6 +65,14 @@ public class JwtTokenProvider {
 	public String getUsername(String token) {
 		return Jwts.parser().setSigningKey(getSecretKey())
 			.parseClaimsJws(token).getBody().getSubject();
+	}
+
+	public String getUserCode(String token) {
+		Claims claims = Jwts.parser()
+			.setSigningKey(secretKey.getBytes())
+			.parseClaimsJws(token)
+			.getBody();
+		return (String) claims.get(Constants.USER_CODE_KEY);
 	}
 
 	public String resolveToken(HttpServletRequest req) {

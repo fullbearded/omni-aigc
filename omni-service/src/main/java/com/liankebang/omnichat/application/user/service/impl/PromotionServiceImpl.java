@@ -1,6 +1,7 @@
 package com.liankebang.omnichat.application.user.service.impl;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -25,8 +26,12 @@ import com.liankebang.omnichat.infrastructure.http.CommonResponseCode;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -65,12 +70,14 @@ public class PromotionServiceImpl extends ServiceImpl<PromotionMapper, Promotion
 		}
 		checkAndCacheUsedQuantity(promotion, false);
 
-		return PromotionDTO.builder().type(promotion.getType()).code(promotion.getCode()).name(promotion.getName()).build();
+		return PromotionDTO.builder().type(promotion.getType()).code(promotion.getCode()).name(promotion.getName())
+			.status(promotion.getStatus()).rule(promotion.getRule()).endAt(promotion.getEndAt()).startAt(promotion.getStartAt())
+			.usageLimit(promotion.getUsageLimit()).build();
 	}
 
 	@Override
 	@Transactional
-	public ChargePromotionDTO usePromotion(ChargePromotionParam param) {
+	public ChargePromotionDTO chargePromotion(ChargePromotionParam param) {
 		checkPromotion(CheckPromotionParam.builder().code(param.getCode()).build());
 
 		User user = userService.getByCodeOrElseThrow(param.getUserCode());
@@ -88,13 +95,13 @@ public class PromotionServiceImpl extends ServiceImpl<PromotionMapper, Promotion
 			}
 		}
 
-		checkAndCacheUsedQuantity(promotion, false);
+		checkAndCacheUsedQuantity(promotion, true);
 
 		UserPromotion userPromotion = UserPromotion.builder().userId(user.getId())
 			.promotionId(promotion.getId())
 			.promotionCode(promotion.getCode())
 			.promotionName(promotion.getName())
-			.scene(param.getScene())
+			.scene(param.getChannel())
 			.chargeData((JSONObject) JSON.toJSON(param))
 			.chargeAt(LocalDateTime.now())
 			.status(UserPromotion.Status.USED)
@@ -107,6 +114,34 @@ public class PromotionServiceImpl extends ServiceImpl<PromotionMapper, Promotion
 			ChargePromotionDTO.builder().code(promotion.getCode()).name(promotion.getName()).type(promotion.getType()).build();
 		log.info("锁定兑换完成，兑换码:{}， 锁定结果:{}", promotion.getCode(), JSON.toJSONString(locked));
 		return locked;
+	}
+
+	@Override
+	public List<ListPromotionDTO> listPromotion(ListPromotionParam req) {
+		List<Promotion> promotions = lambdaQuery()
+			.eq(Objects.nonNull(req.getCode()), Promotion::getCode, req.getCode())
+			.in(Objects.nonNull(req.getCodes()), Promotion::getCode, req.getCode())
+			.like(Objects.nonNull(req.getName()), Promotion::getName, req.getName())
+			.eq(Objects.nonNull(req.getType()), Promotion::getType, req.getType())
+			.eq(Objects.nonNull(req.getStatus()), Promotion::getStatus, req.getStatus())
+			.in(Objects.nonNull(req.getStatuses()), Promotion::getStatus, req.getStatuses())
+			.eq(Objects.nonNull(req.getUsageLimit()), Promotion::getUsageLimit, req.getUsageLimit())
+			.last("LIMIT 500").list();
+
+		List<Long> promotionIds = promotions.stream().map(Promotion::getId).collect(Collectors.toList());
+
+		Map<Long, UserPromotion> userPromotionMap = userPromotionMapper.selectList(Wrappers.<UserPromotion>lambdaQuery()
+			.in(UserPromotion::getPromotionId, promotionIds)).stream()
+			.collect(Collectors.toMap(UserPromotion::getPromotionId, Function.identity()));
+
+		return promotions.stream().map(promotion -> {
+			UserPromotion userPromotion = userPromotionMap.get(promotion.getId());
+			ListPromotionDTO listPromotionDTO = new ListPromotionDTO();
+			BeanUtils.copyProperties(promotion, listPromotionDTO);
+			listPromotionDTO.setUserPromotion(userPromotion);
+			return listPromotionDTO;
+		}).collect(Collectors.toList());
+
 	}
 
 	/**

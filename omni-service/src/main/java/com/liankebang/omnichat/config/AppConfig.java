@@ -14,12 +14,10 @@ import lombok.Data;
  * @author Runner.dada
  * @date 2023/3/23
  */
+@Data
 @Configuration
 @ConfigurationProperties(prefix = "app-config")
-@Data
 public class AppConfig {
-
-	private String env;
 
 	private Proxy proxy;
 
@@ -39,6 +37,7 @@ public class AppConfig {
 
 	@Data
 	public static class Proxy {
+		private Boolean enable;
 		private String host;
 		private Integer port;
 	}

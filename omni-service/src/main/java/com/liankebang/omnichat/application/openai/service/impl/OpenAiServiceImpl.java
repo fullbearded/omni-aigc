@@ -3,12 +3,14 @@ package com.liankebang.omnichat.application.openai.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.liankebang.omnichat.application.openai.client.OpenAiClient;
+import com.liankebang.omnichat.application.openai.controller.OpenAiController;
 import com.liankebang.omnichat.application.openai.domain.chat.MessageQuestion;
 import com.liankebang.omnichat.application.openai.domain.chat.MessageType;
 import com.liankebang.omnichat.application.openai.listener.OpenAISubscriber;
 import com.liankebang.omnichat.application.openai.service.OpenAiService;
 import com.liankebang.omnichat.config.AppConfig;
 
+import java.util.List;
 import java.util.Objects;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -28,13 +30,24 @@ public class OpenAiServiceImpl implements OpenAiService {
 	@Override
 	public Flux<String> chatSend(MessageType type, String prompt, String sessionId) {
 		OpenAiClient openAiClient = buildClient();
-
 		MessageQuestion userMessage = new MessageQuestion(MessageType.TEXT, prompt);
+		List<CompletionsRequest.Message> messages = List.of(CompletionsRequest.Message.builder().role("user").content(prompt).build());
+		return sendToOpenAi(sessionId, messages, openAiClient, userMessage);
+	}
 
+	@Override
+	public Flux<String> chatSend(MessageType type, List<CompletionsRequest.Message> messages, String sessionId) {
+		OpenAiClient openAiClient = buildClient();
+		MessageQuestion userMessage = new MessageQuestion(MessageType.TEXT, messages);
+		return sendToOpenAi(sessionId, messages, openAiClient, userMessage);
+	}
+
+	private Flux<String> sendToOpenAi(String sessionId, List<CompletionsRequest.Message> messages,
+																		OpenAiClient openAiClient, MessageQuestion userMessage){
 		return Flux.create(emitter -> {
 			OpenAISubscriber subscriber = new OpenAISubscriber(emitter, sessionId, this, userMessage);
 			Flux<String> openAiResponse =
-				openAiClient.getChatResponse(appConfig.getApiToken(), sessionId, prompt, null, null, null);
+				openAiClient.getChatResponse(appConfig.getApiToken(), sessionId, messages, null, null, null);
 			openAiResponse.subscribe(subscriber);
 			emitter.onDispose(subscriber);
 		});

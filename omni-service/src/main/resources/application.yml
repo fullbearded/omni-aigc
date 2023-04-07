@@ -2,6 +2,11 @@ server:
   port: 8080
   servlet:
     context-path: /
+    encoding:
+      force: true
+      charset: utf-8
+      enabled: true
+      uri-encoding: utf-8
 
 flyway:
   enabled: true
@@ -9,6 +14,13 @@ flyway:
   baseline-on-migrate: true
   out-of-order: true
 
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    auto-mapping-behavior: full
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    use-generated-keys: true
+  mapper-locations: classpath*:mapper/**/*Mapper.xml
 
 # 登录配置
 login:
@@ -32,6 +44,9 @@ logging:
       flywaydb: debug
 
 spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
   jackson:
     # 日期格式化
     date-format: yyyy-MM-dd HH:mm:ss
@@ -40,6 +55,8 @@ spring:
       indent_output: true
       # 忽略无法转换的对象
       fail_on_empty_beans: false
+      # 日期格式化
+      write-dates-as-timestamps: false
     # 设置空如何序列化
     defaultPropertyInclusion: NON_EMPTY
     deserialization:
@@ -67,54 +84,15 @@ spring:
     url: ${MYSQL_HOST:jdbc:mysql://localhost:3306/omni_aigc?createDatabaseIfNotExist=true&autoReconnect=true&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=UTC}
     username: ${MYSQL_USERNAME:root}
     password: ${MYSQL_PASSWORD:123456}
-    type: com.alibaba.druid.pool.DruidDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
-    druid:
-      master:
-        url: ${MYSQL_HOST:jdbc:mysql://localhost:3306/omni_aigc?createDatabaseIfNotExist=true&autoReconnect=true&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=UTC}
-        username: ${MYSQL_USERNAME:root}
-        password: ${MYSQL_PASSWORD:123456}
-      slave:
-        enabled: false
-      minIdle: 5
-      maxActive: 15
-      # 配置获取连接等待超时的时间
-      maxWait: 60000
-      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
-      timeBetweenEvictionRunsMillis: 60000
-      # 配置一个连接在池中最小生存的时间，单位是毫秒
-      minEvictableIdleTimeMillis: 300000
-      # 配置一个连接在池中最大生存的时间，单位是毫秒
-      maxEvictableIdleTimeMillis: 900000
-      # 配置检测连接是否有效
-      validationQuery: SELECT 1 FROM DUAL
-      testWhileIdle: true
-      testOnBorrow: false
-      testOnReturn: false
-      webStatFilter:
-        enabled: true
-      statViewServlet:
-        enabled: true
-        # 设置白名单，不填则允许所有访问
-        allow:
-        url-pattern: /druid/*
-        # 控制台管理用户名和密码
-        login-username:
-        login-password:
-      filter:
-        stat:
-          enabled: true
-          # 慢SQL记录
-          log-slow-sql: true
-          slow-sql-millis: 1000
-          merge-sql: true
-        wall:
-          config:
-            multi-statement-allow: true
+    hikari:
+      maximum-pool-size: 15
+      minimum-idle: 5
+      idle-timeout: 30000
 
 app-config:
-  env: ${ENV:local}
   proxy:
+    enable: ${PROXY_ENABLE:false}
     host: 127.0.0.1
     port: 1087
   # 多个key用,分割

@@ -98,7 +98,7 @@ public class User implements Serializable {
 
 	@Getter
 	public enum UserType {
-		SYSTEM("系统用户"), WECOM("企业微信用户"), USER("普通用户");
+		SYSTEM("系统用户"), USER("普通用户");
 
 		private String desc;
 

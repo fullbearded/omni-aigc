@@ -62,7 +62,7 @@ public class Promotion {
 	/**
 	 * 可用结束时间
 	 */
-	private LocalDateTime endAT;
+	private LocalDateTime endAt;
 	/**
 	 * 创建时间
 	 */
@@ -91,7 +91,7 @@ public class Promotion {
 	}
 
 	public LocalDateTime normalizeEndAt() {
-		return Optional.ofNullable(getEndAT()).orElse(LocalDateTime.MAX);
+		return Optional.ofNullable(getEndAt()).orElse(LocalDateTime.MAX);
 	}
 
 	@Getter

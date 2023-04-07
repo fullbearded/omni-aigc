@@ -13,7 +13,9 @@ import com.liankebang.omnichat.config.AppConfig;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import java.util.Collections;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
 import javax.net.ssl.SSLException;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +38,8 @@ public class OpenAiClient {
 
 	public OpenAiClient(AppConfig appConfig) {
 		this.appConfig = appConfig;
-		String env = Optional.ofNullable(appConfig.getEnv()).orElse("local");
-		if (!env.equals("prod")) {
+		Boolean proxyEnabled = Optional.ofNullable(appConfig.getProxy()).map(AppConfig.Proxy::getEnable).orElse(false);
+		if (proxyEnabled) {
 			initWithProxy();
 		} else {
 			initWithNoProxy();
@@ -45,37 +47,30 @@ public class OpenAiClient {
 	}
 
 	public void initWithProxy() {
-		log.info("initDev");
-		SslContext sslContext = null;
+		log.info("initWithProxy");
+		SslContext sslContext;
 		try {
-			sslContext = SslContextBuilder
-				.forClient()
-				.trustManager(InsecureTrustManagerFactory.INSTANCE)
-				.build();
+			sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
 		} catch (SSLException e) {
 			throw new RuntimeException(e);
 		}
 
 		SslContext finalSslContext = sslContext;
-		HttpClient httpClient = HttpClient.create().secure(sslContextSpec -> sslContextSpec.sslContext(finalSslContext))
-			.tcpConfiguration(tcpClient -> tcpClient.proxy(proxy ->
-				proxy.type(ProxyProvider.Proxy.HTTP).host(appConfig.getProxy().getHost()).port(appConfig.getProxy().getPort())));
+		HttpClient httpClient = HttpClient.create().secure(sslContextSpec -> sslContextSpec.sslContext(finalSslContext)).tcpConfiguration(
+			tcpClient -> tcpClient.proxy(
+				proxy -> proxy.type(ProxyProvider.Proxy.HTTP).host(appConfig.getProxy().getHost()).port(appConfig.getProxy().getPort())));
 
 		ClientHttpConnector connector = new ReactorClientHttpConnector(httpClient);
-		this.webClient = WebClient.builder().clientConnector(connector)
-			.defaultHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-			.build();
+		this.webClient = WebClient.builder().clientConnector(connector).defaultHeader(HttpHeaders.CONTENT_TYPE, "application/json").build();
 	}
 
 	public void initWithNoProxy() {
 		log.info("initProd");
-		this.webClient = WebClient.builder()
-			.defaultHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-			.build();
+		this.webClient = WebClient.builder().defaultHeader(HttpHeaders.CONTENT_TYPE, "application/json").build();
 	}
 
-	public Flux<String> getChatResponse(String authorization, String user, String prompt, Integer maxTokens, Double temperature,
-																			Double topP) {
+	public Flux<String> getChatResponse(String authorization, String sessionId, List<OpenAiService.CompletionsRequest.Message> messages,
+																			Integer maxTokens, Double temperature, Double topP) {
 		JSONObject params = new JSONObject();
 
 		params.put("model", "gpt-3.5-turbo");
@@ -83,16 +78,14 @@ public class OpenAiClient {
 		params.put("stream", true);
 		params.put("temperature", temperature);
 		params.put("top_p", topP);
-		params.put("user", user);
-		JSONObject message = new JSONObject();
-		message.put("role", "user");
-		message.put("content", prompt);
-		params.put("messages", Collections.singleton(message));
+		params.put("user", sessionId);
+		params.put("messages", messages);
 
 		return webClient.post()
 			.uri(appConfig.getApiHost() + Api.CHAT_PATH)
 			.header(HttpHeaders.AUTHORIZATION, "Bearer " + authorization)
 			.bodyValue(params.toJSONString())
+			.acceptCharset(StandardCharsets.UTF_8)
 			.retrieve()
 			.bodyToFlux(String.class)
 			.onErrorResume(WebClientResponseException.class, ex -> {
@@ -101,28 +94,21 @@ public class OpenAiClient {
 				log.error("OpenAI API error: {} {}", status, res);
 				return Mono.error(new RuntimeException(res));
 			});
-
 	}
 
-
 	public Mono<OpenAiService.CreditGrantsResponse> getCredit(String authorization) {
-		Mono<OpenAiService.CreditGrantsResponse> toMono = webClient.get()
-			.uri(appConfig.getApiHost() + Api.CREDIT_GRANTS_PATH)
-			.header(HttpHeaders.AUTHORIZATION, "Bearer " + authorization)
-			.retrieve()
-			.bodyToMono(OpenAiService.CreditGrantsResponse.class);
+		Mono<OpenAiService.CreditGrantsResponse> toMono =
+			webClient.get().uri(appConfig.getApiHost() + Api.CREDIT_GRANTS_PATH).header(HttpHeaders.AUTHORIZATION, "Bearer " + authorization)
+				.retrieve().bodyToMono(OpenAiService.CreditGrantsResponse.class);
 		return toMono;
 	}
 
 	public Mono<OpenAiService.ModerationData> getModeration(String authorization, String prompt) {
 		JSONObject params = new JSONObject();
 		params.put("input", prompt);
-		Mono<OpenAiService.ModerationData> toMono = webClient.post()
-			.uri(appConfig.getApiHost() + Api.CONTENT_AUDIT_PATH)
-			.header(HttpHeaders.AUTHORIZATION, "Bearer " + authorization)
-			.bodyValue(params.toJSONString())
-			.retrieve()
-			.bodyToMono(OpenAiService.ModerationData.class);
+		Mono<OpenAiService.ModerationData> toMono =
+			webClient.post().uri(appConfig.getApiHost() + Api.CONTENT_AUDIT_PATH).header(HttpHeaders.AUTHORIZATION, "Bearer " + authorization)
+				.bodyValue(params.toJSONString()).retrieve().bodyToMono(OpenAiService.ModerationData.class);
 		return toMono;
 	}
 

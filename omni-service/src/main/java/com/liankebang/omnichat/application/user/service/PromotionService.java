@@ -1,13 +1,18 @@
 package com.liankebang.omnichat.application.user.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.liankebang.omnichat.application.user.domain.Promotion;
+import com.liankebang.omnichat.application.user.domain.UserPromotion;
 
 import jakarta.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 /**
  * promotion
@@ -26,7 +31,53 @@ public interface PromotionService extends IService<Promotion> {
 	/**
 	 * 锁定促销
 	 */
-	ChargePromotionDTO usePromotion(ChargePromotionParam param);
+	ChargePromotionDTO chargePromotion(ChargePromotionParam param);
+
+	/**
+	 * 兑换码列表
+	 **/
+	List<ListPromotionDTO> listPromotion(ListPromotionParam param);
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	class ListPromotionParam {
+		/**
+		 * 促销码
+		 */
+		private String code;
+
+		private List<String> codes;
+
+		/**
+		 * 促销名称
+		 */
+		private String name;
+
+		/**
+		 *
+		 */
+		private String type;
+
+		/**
+		 * 促销状态，unavailable 不可用，available 可用
+		 */
+		private String status;
+
+		private List<String> statuses;
+
+		/**
+		 * 使用次数
+		 */
+		private Integer usageLimit;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	class ListPromotionDTO extends PromotionDTO {
+		private UserPromotion userPromotion;
+	}
 
 	@Data
 	@Builder
@@ -77,9 +128,38 @@ public interface PromotionService extends IService<Promotion> {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	class PromotionDTO {
+		/**
+		 * 促销码
+		 */
 		private String code;
+		/**
+		 * 促销名称
+		 */
 		private String name;
+		/**
+		 * 促销状态，unavailable 不可用，available 可用
+		 */
+		private Promotion.Status status;
+		/**
+		 * 券类型
+		 */
 		private Promotion.Type type;
+		/**
+		 * 规则
+		 */
+		private JSONObject rule;
+		/**
+		 * 使用次数
+		 */
+		private Integer usageLimit;
+		/**
+		 * 可用开始时间
+		 */
+		private LocalDateTime startAt;
+		/**
+		 * 可用结束时间
+		 */
+		private LocalDateTime endAt;
 	}
 
 	@Data

@@ -8,6 +8,8 @@ import com.liankebang.omnichat.application.openai.domain.chat.MessageQuestion;
 import com.liankebang.omnichat.application.openai.domain.chat.MessageResponse;
 import com.liankebang.omnichat.application.openai.domain.chat.MessageType;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.Disposable;
@@ -62,7 +64,6 @@ public class OpenAISubscriber implements Subscriber<String>, Disposable {
 			sb.append(content);
 			subscription.request(1);
 		}
-
 	}
 
 	/**

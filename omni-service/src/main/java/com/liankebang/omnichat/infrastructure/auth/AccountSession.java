@@ -22,7 +22,7 @@ public class AccountSession {
 
 	private String token;
 
-	private String userCode;
+	private String code;
 
 	private String username;
 

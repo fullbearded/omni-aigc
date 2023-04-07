@@ -73,7 +73,7 @@ public class PromotionController {
 	 **/
 	@PostMapping("/charge")
 	public ApiResponse charge(@RequestBody @Validated ChargePromotionParam param) {
-		PromotionService.ChargePromotionDTO usePromotionDTO = promotionService.usePromotion(PromotionService.ChargePromotionParam.builder()
+		PromotionService.ChargePromotionDTO usePromotionDTO = promotionService.chargePromotion(PromotionService.ChargePromotionParam.builder()
 			.userCode(param.getUserCode())
 			.code(param.getCode())
 			.channel(param.getChannel())
@@ -85,18 +85,8 @@ public class PromotionController {
 	 * 列表展示
 	 */
 	@PostMapping("/list")
-	public ApiResponse list(@RequestBody @Validated ListPromotionParam req) {
-
-		List<Promotion> promotions = promotionService.lambdaQuery()
-			.eq(Objects.nonNull(req.getCode()), Promotion::getCode, req.getCode())
-				.in(Objects.nonNull(req.getCodes()), Promotion::getCode, req.getCode())
-					.like(Objects.nonNull(req.getName()), Promotion::getName, req.getName())
-			.eq(Objects.nonNull(req.getType()), Promotion::getType, req.getType())
-			.eq(Objects.nonNull(req.getStatus()), Promotion::getStatus, req.getStatus())
-			.in(Objects.nonNull(req.getStatuses()), Promotion::getStatus, req.getStatuses())
-			.eq(Objects.nonNull(req.getUsageLimit()), Promotion::getUsageLimit, req.getUsageLimit())
-			.last("LIMIT 500").list();
-		return ApiResponse.success(promotions);
+	public ApiResponse list(@RequestBody @Validated PromotionService.ListPromotionParam req) {
+		return ApiResponse.success(promotionService.listPromotion(req));
 	}
 
 	/**
@@ -111,8 +101,9 @@ public class PromotionController {
 			while (retryCount < CODE_DUPLICATE_MAX_RETRY_COUNT) {
 				String code = CodeUtil.generateNewCode(param.getType().getCodePrefix(), param.getType().getCodeLength());
 				try {
+					String name = Objects.isNull(param.getName()) ? param.getType().getDescription() : param.getName();
 					Promotion promotion =
-						Promotion.builder().code(code).name(param.getName()).type(param.getType()).status(Promotion.Status.AVAILABLE)
+						Promotion.builder().code(code).name(name).type(param.getType()).status(Promotion.Status.AVAILABLE)
 							.usageLimit(param.getUsageLimit()).rule(new JSONObject()
 								.fluentPut("useRule", param.getUseRule())
 								.fluentPut("summary", param.getSummary())
@@ -136,39 +127,6 @@ public class PromotionController {
 		return ApiResponse.success(result);
 	}
 
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	static class ListPromotionParam {
-		/**
-		 * 促销码
-		 */
-		private String code;
-
-		private List<String> codes;
-
-		/**
-		 * 促销名称
-		 */
-		private String name;
-
-		/**
-		 *
-		 */
-		private String type;
-
-		/**
-		 * 促销状态，unavailable 不可用，available 可用
-		 */
-		private String status;
-
-		private List<String> statuses;
-
-		/**
-		 * 使用次数
-		 */
-		private Integer usageLimit;
-	}
 
 	@Data
 	@Builder
@@ -177,8 +135,6 @@ public class PromotionController {
 	static class PromotionTypeDTO {
 		private Promotion.Type type;
 		private String description;
-		private String codePrefix;
-		private int codeLength;
 		private int dailyUsageLimit;
 		private int effectiveDays;
 		private int totalCapacity;
@@ -224,7 +180,7 @@ public class PromotionController {
 		@NotNull
 		private Promotion.Type type;
 		/**
-		 * 兑换码名称
+		 * 兑换码名称, 不传则以 Type为准
 		 **/
 		private String name;
 		/**
