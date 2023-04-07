@@ -106,15 +106,7 @@ public class UserSpringSecurityConfig {
 			.exceptionHandling(handling -> handling.authenticationEntryPoint(getExceptionHandlingHandler()))
 			.addFilter(new JwtUserAuthenticationFilter(authenticationManager, applicationContext, Constants.USER_LOGIN_PATH, jwtTokenProvider))
 			.addFilter(new JwtUserAuthorizationFilter(authenticationManager, redisUtil, jwtTokenProvider, userDetailsService))
-			.addFilterBefore(characterEncodingFilter(), CsrfFilter.class)
 			.build();
-	}
-
-	private Filter characterEncodingFilter() {
-		CharacterEncodingFilter filter = new CharacterEncodingFilter();
-		filter.setEncoding("UTF-8");
-		filter.setForceEncoding(true);
-		return filter;
 	}
 
 	private AuthenticationEntryPoint getExceptionHandlingHandler() {

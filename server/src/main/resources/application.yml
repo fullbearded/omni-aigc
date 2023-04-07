@@ -1,0 +1,44 @@
+server:
+  port: 8080
+
+spring:
+  messages:
+    encoding: UTF-8
+  profiles:
+    active: local
+  application:
+    name: server
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    hikari:
+      auto-commit: true
+      connection-timeout: 20000
+      maximum-pool-size: 30
+      minimum-idle: 5
+      idle-timeout: 300000
+      max-lifetime: 1200000
+    url: ${MYSQL_HOST:jdbc:mysql://localhost:3306/opaigc?createDatabaseIfNotExist=true&autoReconnect=true&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=UTC}
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:123456}
+
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: 6379
+      database: 0
+      password: ${REDIS_PASSWORD:}
+      lettuce:
+        pool:
+          max-active: 1000
+          max-wait: 1000ms
+          max-idle: 100
+      ssl: false
+
+app-config:
+  env: ${ENV:local}
+  proxy:
+    host: 127.0.0.1
+    port: 1087
+  # 多个key用,分割
+  apiKeys: ${API_KEYS:your api key}
+  apiHost: ${API_HOST:https://api.openai.com}
