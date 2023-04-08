@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSONObject;
 import com.opaigc.server.application.user.domain.Promotion;
 import com.opaigc.server.application.user.service.PromotionService;
+import com.opaigc.server.infrastructure.exception.AppException;
 import com.opaigc.server.infrastructure.http.ApiResponse;
+import com.opaigc.server.infrastructure.http.CommonResponseCode;
 import com.opaigc.server.infrastructure.utils.CodeUtil;
 
 import jakarta.validation.Valid;

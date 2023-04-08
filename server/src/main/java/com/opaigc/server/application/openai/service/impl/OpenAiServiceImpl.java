@@ -11,6 +11,7 @@ import com.opaigc.server.config.AppConfig;
 
 import java.util.List;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -21,6 +22,7 @@ import reactor.core.publisher.Mono;
  * @date 2023/3/23
  */
 @Service
+@Slf4j
 public class OpenAiServiceImpl implements OpenAiService {
 
 	@Autowired
@@ -77,7 +79,7 @@ public class OpenAiServiceImpl implements OpenAiService {
 
 	@Override
 	public void completed(MessageQuestion questions, String sessionId, String response) {
-
+		log.info("sessionId: {}, questions: {}, response: {}", sessionId, questions, response);
 	}
 
 	@Override

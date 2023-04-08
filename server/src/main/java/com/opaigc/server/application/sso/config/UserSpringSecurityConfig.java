@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,22 +14,15 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
 import com.opaigc.server.application.sso.filter.JwtUserAuthenticationFilter;
 import com.opaigc.server.application.sso.filter.JwtUserAuthorizationFilter;
 import com.opaigc.server.application.sso.handler.CustomLogoutSuccessHandler;
 import com.opaigc.server.infrastructure.common.Constants;
-import com.opaigc.server.infrastructure.exception.AppException;
-import com.opaigc.server.infrastructure.http.ApiResponse;
-import com.opaigc.server.infrastructure.http.CommonResponseCode;
 import com.opaigc.server.infrastructure.jwt.JwtTokenProvider;
 import com.opaigc.server.infrastructure.redis.RedisUtil;
 
-import cn.hutool.json.JSONUtil;
-import io.jsonwebtoken.ExpiredJwtException;
-import java.nio.charset.StandardCharsets;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -76,7 +68,6 @@ public class UserSpringSecurityConfig {
 		return authenticationConfiguration.getAuthenticationManager();
 	}
 
-
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		AuthenticationManager authenticationManager = authenticationManager(http.getSharedObject(AuthenticationConfiguration.class));
@@ -99,33 +90,8 @@ public class UserSpringSecurityConfig {
 				.requestMatchers(Constants.URI_WHITELIST).permitAll()
 				.anyRequest().authenticated()
 			)
-			.exceptionHandling(handling -> handling.authenticationEntryPoint(getExceptionHandlingHandler()))
 			.addFilter(new JwtUserAuthenticationFilter(authenticationManager, applicationContext, Constants.USER_LOGIN_PATH, jwtTokenProvider))
 			.addFilter(new JwtUserAuthorizationFilter(authenticationManager, redisUtil, jwtTokenProvider, userDetailsService))
 			.build();
-	}
-
-	private AuthenticationEntryPoint getExceptionHandlingHandler() {
-		log.info("Exception for authorization");
-		return (request, response, exception) -> {
-			CommonResponseCode code;
-
-			Class<?> aClass = exception.getClass();
-
-			log.warn("Exception for authorization: {}", aClass);
-			if (ExpiredJwtException.class.equals(aClass)) {
-				code = CommonResponseCode.LOGIN_EXPIRED;
-			} else if (AppException.class.equals(aClass)) {
-				code = CommonResponseCode.ACCOUNT_BANNED;
-			} else {
-				code = CommonResponseCode.ACCESS_DENIED;
-			}
-
-			ApiResponse resp = ApiResponse.error(code);
-			response.setStatus(resp.getStatus());
-			response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-			response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-			response.getWriter().write(JSONUtil.toJsonStr(resp));
-		};
 	}
 }

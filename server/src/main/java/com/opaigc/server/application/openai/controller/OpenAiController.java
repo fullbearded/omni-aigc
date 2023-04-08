@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSONObject;
 import com.opaigc.server.application.openai.domain.chat.MessageType;
 import com.opaigc.server.application.openai.service.OpenAiService;
+import com.opaigc.server.application.user.service.UserService;
 import com.opaigc.server.infrastructure.exception.AppException;
 import com.opaigc.server.infrastructure.http.ApiResponse;
 import com.opaigc.server.infrastructure.http.CommonResponseCode;
@@ -50,6 +51,8 @@ public class OpenAiController {
 	private OpenAiService openAiService;
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
+	@Autowired
+	private UserService userService;
 
 	/**
 	 * Chat 流式返回
@@ -62,12 +65,7 @@ public class OpenAiController {
 		if (jwtTokenProvider.validateToken(securityToken)) {
 			userCode = jwtTokenProvider.getUserCode(securityToken);
 		}
-
-		if (Objects.isNull(req.getMessages()) || CollectionUtils.isEmpty(req.getMessages())) {
-			return openAiService.chatSend(MessageType.TEXT, req.getPrompt(), userCode);
-		} else {
-			return openAiService.chatSend(MessageType.TEXT, req.getMessages(), userCode);
-		}
+		return openAiService.chatSend(MessageType.TEXT, req.getMessages(), userCode);
 	}
 
 	@PostMapping("/dashboard/billing/credit")

@@ -41,8 +41,6 @@ public interface OpenAiService extends CompletedCallBack {
 	@AllArgsConstructor
 	@Builder
 	class CompletionsRequest {
-		private String user;
-		private String prompt;
 		@NotEmpty(message = "messages is required")
 		private List<Message> messages;
 		@NotBlank(message = "token is required")
