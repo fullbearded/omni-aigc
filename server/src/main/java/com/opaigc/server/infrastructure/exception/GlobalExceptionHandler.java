@@ -3,7 +3,7 @@ package com.opaigc.server.infrastructure.exception;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-//import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -11,21 +11,22 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import com.opaigc.server.infrastructure.http.ApiResponse;
 import com.opaigc.server.infrastructure.http.CommonResponseCode;
 
 import cn.hutool.core.util.StrUtil;
-//import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletResponse;
 import java.net.SocketTimeoutException;
 import java.nio.file.AccessDeniedException;
 import java.util.Optional;
+import javax.naming.AuthenticationException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -34,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
  * @description: Global Exception handler
  **/
 @RestControllerAdvice
-@RestController
 @Slf4j
 public class GlobalExceptionHandler {
 
@@ -55,24 +55,15 @@ public class GlobalExceptionHandler {
 	/**
 	 * 无去拿先访问
 	 **/
-//	@ExceptionHandler(ExpiredJwtException.class)
-//	@ResponseBody
-//	@ResponseStatus(HttpStatus.UNAUTHORIZED)
-//	public ApiResponse accessDeniedExceptionHandler(ExpiredJwtException e) {
-//		log.warn("Session Expired", e);
-//		return ApiResponse.error(CommonResponseCode.LOGIN_EXPIRED);
-//	}
-
-	/**
-	 * 无去拿先访问
-	 **/
-	@ExceptionHandler(AccessDeniedException.class)
+	@ExceptionHandler(ExpiredJwtException.class)
 	@ResponseBody
-	@ResponseStatus(HttpStatus.FORBIDDEN)
-	public ApiResponse accessDeniedExceptionHandler(AccessDeniedException e) {
-		log.warn("Access Denied", e);
-		return ApiResponse.error(CommonResponseCode.ACCESS_DENIED);
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	public ApiResponse handleExpireJwtException(ExpiredJwtException e) {
+		log.warn("Session Expired", e);
+		return ApiResponse.error(CommonResponseCode.LOGIN_EXPIRED);
 	}
+
+
 
 	/**
 	 * 自定义错误, Http Status 为422
@@ -84,8 +75,15 @@ public class GlobalExceptionHandler {
 		if (response.getStatus() != HttpStatus.OK.value()) {
 			return ApiResponse.error(response.getStatus(), e.getCode(), e.getMessage());
 		}
-		return ApiResponse.error(HttpStatus.UNPROCESSABLE_ENTITY.value(),
-			e.getCode(), e.getMessage());
+		return ApiResponse.error(HttpStatus.UNPROCESSABLE_ENTITY.value(), e.getCode(), e.getMessage());
+	}
+
+	@ExceptionHandler(InsufficientAuthenticationException.class)
+	@ResponseBody
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	public ApiResponse handleInsufficientAuthenticationException(HttpServletResponse response, InsufficientAuthenticationException e) {
+		// 在这里，您可以自定义要返回的错误代码和消息
+		return ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), "your_error_code", e.getMessage());
 	}
 
 	@ExceptionHandler(MaxUploadSizeExceededException.class)
@@ -193,8 +191,7 @@ public class GlobalExceptionHandler {
 	public ApiResponse methodArgumentTypeMismatchExceptionHandler(
 		MethodArgumentTypeMismatchException e) {
 		log.warn("Method Argument Type Mismatch", e);
-		return ApiResponse.error(CommonResponseCode.INVALID_PARAMS,
-			String.format("参数类型错误, 参数名: %s", e.getName())
+		return ApiResponse.error(CommonResponseCode.INVALID_PARAMS, String.format("参数类型错误, 参数名: %s", e.getName())
 		);
 	}
 
@@ -207,8 +204,29 @@ public class GlobalExceptionHandler {
 	public ApiResponse missingServletRequestParameterExceptionHandler(
 		MissingServletRequestParameterException e) {
 		log.warn("Missing Parameter", e);
-		return ApiResponse.error(CommonResponseCode.INVALID_PARAMS,
-			String.format("参数缺失[%s - %s]", e.getParameterName(), e.getParameterType()));
+		return ApiResponse.error(CommonResponseCode.INVALID_PARAMS, String.format("参数缺失[%s - %s]", e.getParameterName(), e.getParameterType()));
+	}
+
+	/**
+	 * AuthenticationException 认证异常
+	 */
+	@ExceptionHandler(AuthenticationException.class)
+	@ResponseBody
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	public ApiResponse handleAuthenticationException(AuthenticationException e) {
+		log.warn("AuthenticationException ", e);
+		return ApiResponse.error(CommonResponseCode.WEB_UNAUTHORIZED);
+	}
+
+	/**
+	 * AuthenticationException 认证异常
+	 */
+	@ExceptionHandler(AccessDeniedException.class)
+	@ResponseBody
+	@ResponseStatus(HttpStatus.FORBIDDEN)
+	public ApiResponse handleAccessDeniedException(AccessDeniedException e) {
+		log.warn("AccessDeniedException ", e);
+		return ApiResponse.error(CommonResponseCode.ACCESS_DENIED);
 	}
 
 

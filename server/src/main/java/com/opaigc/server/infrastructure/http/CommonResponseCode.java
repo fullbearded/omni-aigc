@@ -34,6 +34,7 @@ public enum CommonResponseCode implements ApiResponseCode {
 	RECORD_NOT_FOUND("100007", "数据未找到", NOT_FOUND.value()),
 
 	// 账户类错误
+	WEB_UNAUTHORIZED("200000", "访问未授权", UNAUTHORIZED.value()),
 	LOGIN_LOCKED("200001", "密码错误超过%s次，请%s分钟后再试", UNAUTHORIZED.value()),
 	LOGIN_ACCOUNT_NOT_FOUND("200002", "账户或密码错误", UNAUTHORIZED.value()),
 	ACCOUNT_BANNED("200003", "账户被禁用", UNAUTHORIZED.value()),
