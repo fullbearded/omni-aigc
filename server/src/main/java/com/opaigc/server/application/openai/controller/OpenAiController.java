@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSONObject;
 import com.opaigc.server.application.openai.domain.chat.MessageType;
 import com.opaigc.server.application.openai.service.OpenAiService;
+import com.opaigc.server.infrastructure.exception.AppException;
 import com.opaigc.server.infrastructure.http.ApiResponse;
+import com.opaigc.server.infrastructure.http.CommonResponseCode;
+import com.opaigc.server.infrastructure.jwt.JwtTokenProvider;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -45,6 +48,8 @@ public class OpenAiController {
 	private final MessageSource messageSource;
 	@Autowired
 	private OpenAiService openAiService;
+	@Autowired
+	private JwtTokenProvider jwtTokenProvider;
 
 	/**
 	 * Chat 流式返回
@@ -52,10 +57,16 @@ public class OpenAiController {
 	@PostMapping(value = "/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE + ";charset=UTF-8")
 	@CrossOrigin(origins="*")
 	public Flux<String> streamCompletions(@RequestBody OpenAiService.CompletionsRequest req) {
+		String userCode = null;
+		String securityToken = req.getToken();
+		if (jwtTokenProvider.validateToken(securityToken)) {
+			userCode = jwtTokenProvider.getUserCode(securityToken);
+		}
+
 		if (Objects.isNull(req.getMessages()) || CollectionUtils.isEmpty(req.getMessages())) {
-			return openAiService.chatSend(MessageType.TEXT, req.getPrompt(), req.getUser());
+			return openAiService.chatSend(MessageType.TEXT, req.getPrompt(), userCode);
 		} else {
-			return openAiService.chatSend(MessageType.TEXT, req.getMessages(), req.getUser());
+			return openAiService.chatSend(MessageType.TEXT, req.getMessages(), userCode);
 		}
 	}
 
