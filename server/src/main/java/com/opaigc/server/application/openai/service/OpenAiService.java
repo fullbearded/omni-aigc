@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.opaigc.server.application.openai.domain.chat.MessageType;
 import com.opaigc.server.application.openai.listener.CompletedCallBack;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +43,10 @@ public interface OpenAiService extends CompletedCallBack {
 	class CompletionsRequest {
 		private String user;
 		private String prompt;
+		@NotEmpty(message = "messages is required")
 		private List<Message> messages;
+		@NotBlank(message = "token is required")
+		private String token;
 
 		@Data
 		@NoArgsConstructor
