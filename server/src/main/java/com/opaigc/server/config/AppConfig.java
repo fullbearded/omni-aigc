@@ -14,32 +14,31 @@ import lombok.Data;
  * @author Runner.dada
  * @date 2023/3/23
  */
+@Data
 @Configuration
 @ConfigurationProperties(prefix = "app-config")
-@Data
 public class AppConfig {
 
-    private String env;
+	private Proxy proxy;
 
-    private Proxy proxy;
+	private String apiKeys;
 
-    private String apiKeys;
+	private String apiHost;
 
-    private String apiHost;
+	public String getApiToken() {
+		List<String> keyList = ListUtil.toList(apiKeys.split(","));
+		if (keyList.size() == 1) {
+			return keyList.get(0);
+		}
+		Random random = new Random();
+		int index = random.nextInt(keyList.size());
+		return keyList.get(index);
+	}
 
-    @Data
-    public static class Proxy {
-        private String host;
-        private Integer port;
-    }
-
-    public String getApiToken() {
-        List<String> keyList = ListUtil.toList(apiKeys.split(","));
-        if (keyList.size() == 1) {
-            return keyList.get(0);
-        }
-        Random random = new Random();
-        int index = random.nextInt(keyList.size());
-        return keyList.get(index);
-    }
+	@Data
+	public static class Proxy {
+		private Boolean enable;
+		private String host;
+		private Integer port;
+	}
 }
