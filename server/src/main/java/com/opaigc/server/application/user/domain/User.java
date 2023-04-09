@@ -80,6 +80,10 @@ public class User implements Serializable {
 	private UserStatusEnum status = UserStatusEnum.ENABLE;
 
 	/**
+	 * 注册IP
+	 **/
+	private String registerIp;
+	/**
 	 * 最后登录IP
 	 **/
 	private String lastLoginIp;

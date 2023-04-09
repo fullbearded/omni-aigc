@@ -25,6 +25,7 @@ public class MessageQuestion {
 	private List<OpenAiService.CompletionsRequest.Message> messages;
 
 	public MessageQuestion(MessageType messageType, List<OpenAiService.CompletionsRequest.Message> messages) {
+		this.messageType = messageType;
 		this.messages = messages;
 		this.date = new Date();
 	}

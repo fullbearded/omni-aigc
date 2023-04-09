@@ -9,9 +9,12 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.opaigc.server.application.user.domain.Member;
 import com.opaigc.server.application.user.domain.User;
+import com.opaigc.server.application.user.domain.UserChat;
 import com.opaigc.server.application.user.event.ChatStreamCompletedEvent;
 import com.opaigc.server.application.user.service.MemberService;
+import com.opaigc.server.application.user.service.UserChatService;
 import com.opaigc.server.application.user.service.UserService;
+import com.opaigc.server.infrastructure.utils.TokenCounter;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +35,8 @@ public class ChatStreamCompletedSubscriber {
 	private UserService userService;
 	@Autowired
 	private MemberService memberService;
+	@Autowired
+	private UserChatService userChatService;
 
 	LoadingCache<String, Optional<Member>> memberCache = CacheBuilder.newBuilder()
 		.refreshAfterWrite(CACHE_REFRESH_MINUTES, TimeUnit.MINUTES)
@@ -49,6 +54,17 @@ public class ChatStreamCompletedSubscriber {
 		if (memberOptional.isEmpty()) {
 			return;
 		}
-		memberService.usedQuotaIncrement(memberOptional.get().getId(), 1);
+		memberService.usedQuotaIncrement(memberOptional.get(), 1);
+
+		TokenCounter tokenCounter = new TokenCounter();
+		int tokenCount = tokenCounter.countMessages(event.getQuestions().getMessages());
+
+		UserChat userChat = UserChat.builder().userId(memberOptional.get().getUserId())
+			.token(tokenCount)
+			.questions(JSONObject.parseObject(JSONObject.toJSONString(event.getQuestions())))
+			.answers(new JSONObject().fluentPut("answer", event.getResponse()))
+			.createdBy(event.getSessionId())
+			.build();
+		userChatService.save(userChat);
 	}
 }

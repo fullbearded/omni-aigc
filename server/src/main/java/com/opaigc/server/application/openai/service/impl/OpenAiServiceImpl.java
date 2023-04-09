@@ -1,32 +1,20 @@
 package com.opaigc.server.application.openai.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.opaigc.server.application.openai.client.OpenAiClient;
 import com.opaigc.server.application.openai.domain.chat.MessageQuestion;
 import com.opaigc.server.application.openai.domain.chat.MessageType;
 import com.opaigc.server.application.openai.listener.OpenAISubscriber;
 import com.opaigc.server.application.openai.service.OpenAiService;
-import com.opaigc.server.application.user.domain.Member;
-import com.opaigc.server.application.user.domain.User;
 import com.opaigc.server.application.user.event.ChatStreamCompletedEvent;
-import com.opaigc.server.application.user.service.MemberService;
-import com.opaigc.server.application.user.service.UserService;
 import com.opaigc.server.config.AppConfig;
 import com.opaigc.server.infrastructure.common.Constants;
-import com.opaigc.server.infrastructure.redis.RedisUtil;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

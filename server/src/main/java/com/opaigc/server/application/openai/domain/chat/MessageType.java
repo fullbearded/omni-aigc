@@ -8,5 +8,6 @@ package com.opaigc.server.application.openai.domain.chat;
  */
 
 public enum MessageType {
-	TEXT;
+	TEXT
+	;
 }

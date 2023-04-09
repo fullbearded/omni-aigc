@@ -27,6 +27,8 @@ public class Constants {
 	public static final String USER_LOGIN_PATH = "/api/auth/login";
 	public static final String USER_LOGOUT_PATH = "/api/auth/logout";
 
+	public static final String MOBILE_REGEX = "^1[3-9]\\d{9}$";
+
 	public static final String[] STATIC_WHITELIST = {
 		"/*.html", "/*.css", "/*.js", "/*.png", "/*/*.html", "/*/*.css", "/*/*.js", "/*/*.png",
 		"/*/*.woff", "/*/*.ttf", "/*.json",
@@ -47,6 +49,7 @@ public class Constants {
 		 * because the WebSocket connection is a long connection, Spring Security will intercept the request and return 401
 		 **/
 		"/api/chat/stream",
+		"/api/auth/registration"
 	};
 
 }

@@ -7,6 +7,7 @@ CREATE TABLE `member`
 	`user_id`     BIGINT      NOT NULL COMMENT '用户ID',
 	`expire_date` datetime(3) COMMENT '会员到期日',
 	`daily_limit` INT         NOT NULL DEFAULT 0 COMMENT '每日限额',
+	`free_used_quota`  INT         NOT NULL DEFAULT 0 COMMENT '免费使用额度统计',
 	`used_quota`  INT         NOT NULL DEFAULT 0 COMMENT '已使用额度',
 	`total_quota` INT         NOT NULL DEFAULT 0 COMMENT '总查询额度',
 	`version`     INT NOT NULL DEFAULT 0 COMMENT '版本号',

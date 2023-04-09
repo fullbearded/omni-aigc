@@ -3,7 +3,6 @@ package com.opaigc.server.application.openai.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.MediaType;
-import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSONObject;
 import com.opaigc.server.application.openai.domain.chat.MessageType;
 import com.opaigc.server.application.openai.service.OpenAiService;
+import com.opaigc.server.application.user.domain.UserChat;
+import com.opaigc.server.application.user.service.UserChatService;
 import com.opaigc.server.application.user.service.UserService;
 import com.opaigc.server.infrastructure.exception.AppException;
 import com.opaigc.server.infrastructure.http.ApiResponse;
@@ -21,6 +22,9 @@ import com.opaigc.server.infrastructure.jwt.JwtTokenProvider;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -54,18 +58,53 @@ public class OpenAiController {
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private UserChatService userChatService;
+
 	/**
 	 * Chat 流式返回
 	 */
 	@PostMapping(value = "/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE + ";charset=UTF-8")
-	@CrossOrigin(origins="*")
+	@CrossOrigin(origins = "*")
 	public Flux<String> streamCompletions(@RequestBody OpenAiService.CompletionsRequest req) {
 		String userCode = null;
 		String securityToken = req.getToken();
 		if (jwtTokenProvider.validateToken(securityToken)) {
 			userCode = jwtTokenProvider.getUserCode(securityToken);
 		}
+		validateUser(userCode);
+
 		return openAiService.chatSend(MessageType.TEXT, req.getMessages(), userCode);
+	}
+
+	private void validateUser(String userCode) {
+		if (Objects.isNull(userCode)) {
+			throw new AppException(CommonResponseCode.ACCESS_DENIED);
+		}
+		UserService.UserMemberDTO userMemberDTO = userService.getUserInfo(userCode);
+		if (userMemberDTO.isFreeUser()) {
+			validateFreeUser(userMemberDTO);
+		} else {
+			validateVipUser(userMemberDTO);
+		}
+	}
+
+	private void validateVipUser(UserService.UserMemberDTO userMemberDTO) {
+		if (userMemberDTO.getUsedQuota() >= userMemberDTO.getTotalQuota()) {
+			throw new AppException(CommonResponseCode.USER_USAGE_REACH_TOTAL_LIMIT);
+		}
+	}
+
+	private void validateFreeUser(UserService.UserMemberDTO userMemberDTO) {
+		LocalDate today = LocalDate.now();
+		LocalDateTime startOfDay = today.atStartOfDay();
+		LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+
+		Long todayUserChatCount = userChatService.lambdaQuery().eq(UserChat::getUserId, userMemberDTO.getId())
+			.between(UserChat::getCreatedAt, startOfDay, endOfDay).count();
+		if (todayUserChatCount >= userMemberDTO.getDailyLimit()) {
+			throw new AppException(CommonResponseCode.USER_DAILY_USAGE_LIMIT);
+		}
 	}
 
 	@PostMapping("/dashboard/billing/credit")

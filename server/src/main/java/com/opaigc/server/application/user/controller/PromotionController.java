@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSONObject;
 import com.opaigc.server.application.user.domain.Promotion;
 import com.opaigc.server.application.user.service.PromotionService;
-import com.opaigc.server.infrastructure.exception.AppException;
+import com.opaigc.server.infrastructure.auth.AccountSession;
 import com.opaigc.server.infrastructure.http.ApiResponse;
-import com.opaigc.server.infrastructure.http.CommonResponseCode;
 import com.opaigc.server.infrastructure.utils.CodeUtil;
 
 import jakarta.validation.Valid;
@@ -33,8 +32,8 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author: Runner.dada
  * @date: 2023/4/5
- * @description:	兑换码
-**/
+ * @description: 兑换码
+ **/
 @Slf4j
 @RestController
 @RequestMapping("/api/promotion")
@@ -73,9 +72,10 @@ public class PromotionController {
 	 * 兑换码兑换
 	 **/
 	@PostMapping("/charge")
-	public ApiResponse charge(@RequestBody @Validated ChargePromotionParam param) {
+	public ApiResponse charge(@RequestBody @Validated ChargePromotionParam param,
+														@NotNull(message = "请登录后再操作") AccountSession accountSession) {
 		PromotionService.ChargePromotionDTO usePromotionDTO = promotionService.chargePromotion(PromotionService.ChargePromotionParam.builder()
-			.userCode(param.getUserCode())
+			.userCode(accountSession.getCode())
 			.code(param.getCode())
 			.channel(param.getChannel())
 			.build());
@@ -154,11 +154,6 @@ public class PromotionController {
 		 **/
 		@NotBlank(message = "兑换码不能为空")
 		private String code;
-		/**
-		 * 用户Code
-		 **/
-		@NotBlank(message = "用户Code不能为空")
-		private String userCode;
 		/**
 		 * 核销渠道
 		 **/

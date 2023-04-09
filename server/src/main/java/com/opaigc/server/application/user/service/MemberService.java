@@ -16,6 +16,6 @@ public interface MemberService extends IService<Member> {
 
 	Member findOrCreateByUserId(Long userId);
 
-	Boolean usedQuotaIncrement(Long memberId, Integer amount);
+	Boolean usedQuotaIncrement(Member member, Integer amount);
 
 }
