@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  omniaigc:
+    image: fullbearded/omniaigc:latest
+    restart: always
+    container_name: omniaigc
+    networks:
+      omniaigc_network:
+    expose:
+      - "3010"
+    ports:
+      - 3010:80
+    environment:
+      MYSQL_HOST: jdbc:mysql://opaigc.cbrd6p1visoy.ap-northeast-1.rds.amazonaws.com:3306/omniaigc?createDatabaseIfNotExist=true&autoReconnect=true&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=UTC
+      MYSQL_USERNAME: cc
+      MYSQL_PASSWORD: qazwsx123
+      REDIS_HOST: 172.31.14.85
+      REDIS_PASSWORD:
+      ENV: prod
+      API_KEYS: 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
+      API_HOST: https://api.openai.com
+networks:
+  omniaigc_network:
