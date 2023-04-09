@@ -33,4 +33,4 @@ coverage
 out
 
 include server/.gitignore
-docker-compose-prod.yml
+docker-compose/docker-compose-prod.yml

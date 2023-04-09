@@ -25,8 +25,8 @@ login:
   # 登录安全配置
   security:
     jwt:
-      secret-key: u1shfur#10
-      expire-in: 3600000 # 60 minutes duration by default: 60 minutes * 60 seconds * 1000 miliseconds
+      secret-key: ${SRPING_SECURITY_KEY:u1shfur#10}
+      expire-in: ${SRPING_SECURITY_EXPIRE_IN:3600000} # 60 minutes duration by default: 60 minutes * 60 seconds * 1000 miliseconds
 
 logging:
   level:
@@ -65,7 +65,7 @@ spring:
     redis:
       host: ${REDIS_HOST:127.0.0.1}
       port: 6379
-      database: 12
+      database: ${REDIS_DB:12}
       password: ${REDIS_PASSWORD:}
       lettuce:
         pool:
