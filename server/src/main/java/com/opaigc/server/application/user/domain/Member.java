@@ -39,6 +39,10 @@ public class Member {
 	 **/
 	private Integer dailyLimit;
 	/**
+	 * 已使用额度-免费
+	 **/
+	private Integer freeUsedQuota;
+	/**
 	 * 已使用额度
 	 **/
 	private Integer usedQuota;
@@ -70,4 +74,13 @@ public class Member {
 	 * 更新人
 	 **/
 	private String updatedBy;
+
+	public Boolean isExpired() {
+		return expireDate.isBefore(LocalDateTime.now());
+	}
+
+	public Boolean isFreeUser() {
+		return totalQuota == 0 || isExpired();
+	}
+
 }

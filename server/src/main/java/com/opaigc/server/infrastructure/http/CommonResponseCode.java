@@ -35,6 +35,11 @@ public enum CommonResponseCode implements ApiResponseCode {
 	WEBCLIENT_NETWORK_TIMEOUT("100008", "网络超时，请重试", REQUEST_TIMEOUT.value()),
 	WEBCLIENT_ERROR("100009", "网络错误，请重试", INTERNAL_SERVER_ERROR.value()),
 
+	CAPTCHA_RULE_NOT_EXIST("100010", "验证码规则不存在", NOT_FOUND.value()),
+	USER_NAME_EXIST("100011", "用户名已存在", BAD_REQUEST.value()),
+	MOBILE_EXIST("100012", "手机号已存在", BAD_REQUEST.value()),
+	USERNAME_OR_MOBILE_EXIST("100013", "用户名或手机号已存在", BAD_REQUEST.value()),
+
 	// 账户类错误
 	WEB_UNAUTHORIZED("200000", "访问未授权", UNAUTHORIZED.value()),
 	LOGIN_LOCKED("200001", "密码错误超过%s次，请%s分钟后再试", UNAUTHORIZED.value()),
@@ -50,6 +55,9 @@ public enum CommonResponseCode implements ApiResponseCode {
 	PROMOTION_INVALID("300002", "兑换码已失效", BAD_REQUEST.value()),
 	PROMOTION_USED("300003", "兑换码已使用", BAD_REQUEST.value()),
 	PROMOTION_USE_FAILED("300004", "兑换码使用失败", BAD_REQUEST.value()),
+
+	USER_DAILY_USAGE_LIMIT("300005", "每日使用次数已达上限", BAD_REQUEST.value()),
+	USER_USAGE_REACH_TOTAL_LIMIT("300005", "用户使用次数已达总额, 请重新购买", BAD_REQUEST.value()),
 	;
 
 	private final String code;

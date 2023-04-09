@@ -13,6 +13,7 @@ CREATE TABLE `users`
 	`sex`             VARCHAR(10)           DEFAULT 'MAN' COMMENT '用户性别: MAN男 WOMAN女 UNKNOWN未知',
 	`user_type`       VARCHAR(20)           DEFAULT 'SYSTEM' COMMENT '用户类型: SYSTEM 系统用户 WECOM 企业微信用户 USER 普通用户',
 	`status`          VARCHAR(20)           DEFAULT 'ENABLE' COMMENT '帐号状态：ENABLE 正常使用 BANNED 禁用',
+	`register_ip`     VARCHAR(50)           DEFAULT '' COMMENT '注册IP',
 	`last_login_ip`   VARCHAR(50)           DEFAULT '' COMMENT '最后登陆IP',
 	`last_login_date` DATETIME              DEFAULT NULL COMMENT '最后登陆时间',
 	`remark`          VARCHAR(500)          DEFAULT '' COMMENT '备注信息',

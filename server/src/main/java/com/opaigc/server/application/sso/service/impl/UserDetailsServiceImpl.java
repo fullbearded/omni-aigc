@@ -41,7 +41,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		this.redisUtil = redisUtil;
 	}
 
-	private String getRemoteAddress() {
+	public String getRemoteAddress() {
 		RequestAttributes attribs = RequestContextHolder.getRequestAttributes();
 		if (attribs instanceof NativeWebRequest) {
 			HttpServletRequest request = (HttpServletRequest) ((NativeWebRequest) attribs).getNativeRequest();

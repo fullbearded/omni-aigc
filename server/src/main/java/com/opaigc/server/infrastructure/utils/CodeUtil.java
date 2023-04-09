@@ -1,6 +1,7 @@
 package com.opaigc.server.infrastructure.utils;
 
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 /**
@@ -30,6 +31,19 @@ public class CodeUtil {
 		ret = addCheckNumber(ret, checkBitLen, checkModData);
 
 		return convertToBase32SerialCode(ret, codeLen);
+	}
+
+	public static String generateRandomUserCode(int length) {
+		SecureRandom random = new SecureRandom();
+		StringBuilder stringBuilder = new StringBuilder();
+		String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+		for (int i = 0; i < length; i++) {
+			int index = random.nextInt(characters.length());
+			stringBuilder.append(characters.charAt(index));
+		}
+
+		return stringBuilder.toString();
 	}
 
 	private static int calculateDataBitLen(int totalBitLen, int checkBitLen, int flagBitLen) {

@@ -43,7 +43,11 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 	}
 
 	@Override
-	public Boolean usedQuotaIncrement(Long memberId, Integer amount) {
-		return lambdaUpdate().eq(Member::getId, memberId).setSql("used_quota = used_quota + " + amount).update();
+	public Boolean usedQuotaIncrement(Member member, Integer amount) {
+		if (member.isFreeUser()) {
+			return lambdaUpdate().eq(Member::getId, member.getId()).setSql("free_used_quota = free_used_quota + " + amount).update();
+		} else {
+			return lambdaUpdate().eq(Member::getId, member.getId()).setSql("used_quota = used_quota + " + amount).update();
+		}
 	}
 }
