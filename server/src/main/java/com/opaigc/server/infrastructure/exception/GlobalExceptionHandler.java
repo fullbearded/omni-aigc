@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import com.opaigc.server.infrastructure.http.ApiResponse;
@@ -22,6 +23,7 @@ import com.opaigc.server.infrastructure.http.CommonResponseCode;
 
 import cn.hutool.core.util.StrUtil;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.netty.handler.ssl.SslHandshakeTimeoutException;
 import jakarta.servlet.http.HttpServletResponse;
 import java.net.SocketTimeoutException;
 import java.nio.file.AccessDeniedException;
@@ -62,7 +64,6 @@ public class GlobalExceptionHandler {
 		log.warn("Session Expired", e);
 		return ApiResponse.error(CommonResponseCode.LOGIN_EXPIRED);
 	}
-
 
 
 	/**

@@ -9,6 +9,8 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import com.alibaba.fastjson.JSONObject;
 import com.opaigc.server.application.openai.service.OpenAiService;
 import com.opaigc.server.config.AppConfig;
+import com.opaigc.server.infrastructure.exception.AppException;
+import com.opaigc.server.infrastructure.http.CommonResponseCode;
 
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
@@ -88,8 +90,8 @@ public class OpenAiClient {
 			.onErrorResume(WebClientResponseException.class, ex -> {
 				HttpStatus status = (HttpStatus) ex.getStatusCode();
 				String res = ex.getResponseBodyAsString();
-				log.error("OpenAI API error: {} {}", status, res);
-				return Mono.error(new RuntimeException(res));
+				log.error("OpenAI API error: {}, {}", status, res, ex);
+				return Mono.error(new AppException(CommonResponseCode.WEBCLIENT_ERROR));
 			});
 	}
 

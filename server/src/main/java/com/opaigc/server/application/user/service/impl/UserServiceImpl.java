@@ -32,9 +32,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 	@Override
 	public User getByCodeOrElseThrow(String code) {
-		return lambdaQuery().eq(User::getCode, code).eq(User::getStatus, User.UserStatusEnum.ENABLE)
-			.last("LIMIT 1").oneOpt()
-			.orElseThrow(() -> new AppException(CommonResponseCode.USER_NOT_FOUND));
+		return getByCode(code).orElseThrow(() -> new AppException(CommonResponseCode.USER_NOT_FOUND));
+	}
+
+	@Override
+	public Optional<User> getByCode(String code) {
+		return lambdaQuery().eq(User::getCode, code).eq(User::getStatus, User.UserStatusEnum.ENABLE).last("LIMIT 1").oneOpt();
 	}
 
 	@Override

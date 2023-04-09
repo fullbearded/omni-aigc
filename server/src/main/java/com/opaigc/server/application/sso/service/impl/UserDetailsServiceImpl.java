@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
-import com.opaigc.server.application.sso.domain.dto.SystemUserLoginDto;
+import com.opaigc.server.application.sso.domain.dto.AccountLoginDto;
 import com.opaigc.server.application.user.domain.User;
 import com.opaigc.server.application.user.service.UserService;
 import com.opaigc.server.infrastructure.common.Constants;
@@ -62,7 +62,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 			updatedUser.setId(u.getId());
 			userService.updateById(updatedUser);
 
-			SystemUserLoginDto systemUserLoginDto = new SystemUserLoginDto();
+			AccountLoginDto systemUserLoginDto = new AccountLoginDto();
 			BeanUtils.copyProperties(u, systemUserLoginDto);
 			systemUserLoginDto.setUser(u);
 			return systemUserLoginDto;

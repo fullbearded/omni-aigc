@@ -48,9 +48,9 @@ public class OpenAISubscriber implements Subscriber<String>, Disposable {
 	 **/
 	@Override
 	public void onNext(String data) {
-		log.info("OpenAI返回数据：{}", data);
+		log.debug("OpenAI返回数据：{}", data);
 		if ("[DONE]".equals(data)) {
-			log.info("OpenAI返回数据结束了");
+			log.debug("OpenAI返回数据结束了");
 			subscription.request(1);
 			emitter.next(JSON.toJSONString(new MessageResponse(MessageType.TEXT, "", true)));
 			completedCallBack.completed(questions, sessionId, sb.toString());
@@ -79,7 +79,7 @@ public class OpenAISubscriber implements Subscriber<String>, Disposable {
 	 **/
 	@Override
 	public void onComplete() {
-		log.info("OpenAI返回数据完成");
+		log.debug("OpenAI返回数据完成");
 		emitter.complete();
 	}
 

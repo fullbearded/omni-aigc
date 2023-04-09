@@ -32,6 +32,8 @@ public enum CommonResponseCode implements ApiResponseCode {
 	REQ_TIMEOUT("100005", "请求超时，请重试", REQUEST_TIMEOUT.value()),
 	ILLEGAL_REQUEST("100006", "非法请求", INTERNAL_SERVER_ERROR.value()),
 	RECORD_NOT_FOUND("100007", "数据未找到", NOT_FOUND.value()),
+	WEBCLIENT_NETWORK_TIMEOUT("100008", "网络超时，请重试", REQUEST_TIMEOUT.value()),
+	WEBCLIENT_ERROR("100009", "网络错误，请重试", INTERNAL_SERVER_ERROR.value()),
 
 	// 账户类错误
 	WEB_UNAUTHORIZED("200000", "访问未授权", UNAUTHORIZED.value()),

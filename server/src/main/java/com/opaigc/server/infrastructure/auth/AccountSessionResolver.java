@@ -8,7 +8,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-//import com.opaigc.server.application.sso.domain.dto.SystemUserLoginDto;
+import com.opaigc.server.application.sso.domain.dto.AccountLoginDto;
 
 import cn.hutool.json.JSONUtil;
 import java.util.Objects;
@@ -21,24 +21,22 @@ import java.util.Objects;
 public class AccountSessionResolver implements HandlerMethodArgumentResolver {
 
 	@Override
-	public boolean supportsParameter(MethodParameter methodParameter) {
-		return methodParameter.getParameterType().isAssignableFrom(AccountSession.class);
+	public boolean supportsParameter(MethodParameter parameter) {
+		return parameter.getParameterType().equals(AccountSession.class);
 	}
 
-	@Override
-	public Object resolveArgument(MethodParameter parameter,
-																ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
-																WebDataBinderFactory binderFactory) {
 
+	@Override
+	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+																NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
 		if (Objects.isNull(authentication)) {
 			return null;
 		}
-//		SystemUserLoginDto systemUserLoginDto = JSONUtil.toBean(authentication.getPrincipal().toString(), SystemUserLoginDto.class);
-
+		AccountLoginDto systemUserLoginDto = JSONUtil.toBean(authentication.getPrincipal().toString(), AccountLoginDto.class);
 		AccountSession accountSession = new AccountSession();
-//		BeanUtils.copyProperties(systemUserLoginDto, accountSession);
+		BeanUtils.copyProperties(systemUserLoginDto, accountSession);
 		return accountSession;
 	}
 }

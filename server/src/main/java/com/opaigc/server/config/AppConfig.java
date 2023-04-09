@@ -19,11 +19,22 @@ import lombok.Data;
 @ConfigurationProperties(prefix = "app-config")
 public class AppConfig {
 
+	/**
+	 * 代理
+	 **/
 	private Proxy proxy;
-
+	/**
+	 * api token
+	 **/
 	private String apiKeys;
-
+	/**
+	 * api host
+	 **/
 	private String apiHost;
+	/**
+	 * 每日限制
+	 **/
+	private Integer dailyLimit;
 
 	public String getApiToken() {
 		List<String> keyList = ListUtil.toList(apiKeys.split(","));

@@ -18,6 +18,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 @ToString(callSuper = true)
-public class SystemUserLoginDto extends LoginUserDto {
+public class AccountLoginDto extends LoginUserDto {
 	private String role;
 }
