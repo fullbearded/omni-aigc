@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import com.opaigc.server.application.sso.domain.AccountType;
-import com.opaigc.server.application.sso.domain.dto.SystemUserLoginDto;
+import com.opaigc.server.application.sso.domain.dto.AccountLoginDto;
 import com.opaigc.server.application.sso.utils.LoginUtil;
 import com.opaigc.server.infrastructure.common.Constants;
 import com.opaigc.server.infrastructure.exception.AppException;
@@ -85,7 +85,7 @@ public abstract class AbstractJwtAuthorizationFilter extends BasicAuthentication
 		}
 		// 4.判断账户是否被禁用
 		UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-		SystemUserLoginDto systemUserLoginDto = (SystemUserLoginDto) userDetails;
+		AccountLoginDto systemUserLoginDto = (AccountLoginDto) userDetails;
 		if (systemUserLoginDto.isBanned()) {
 			throw new AppException(CommonResponseCode.ACCOUNT_BANNED);
 		}

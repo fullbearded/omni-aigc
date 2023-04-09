@@ -30,8 +30,7 @@ public class FrequencyUseProcessor implements ChargeProcessor {
 	@Override
 	@Transactional
 	public boolean off(Context context) {
-		Optional<Member> memberOptional = memberService.lambdaQuery().eq(Member::getUserId, context.getUser().getId())
-			.last("LIMIT 1").oneOpt();
+		Optional<Member> memberOptional = memberService.findByUserId(context.getUser().getId());
 
 		if (memberOptional.isPresent()) {
 			Member member = memberOptional.get();

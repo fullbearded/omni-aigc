@@ -65,7 +65,7 @@ spring:
     redis:
       host: ${REDIS_HOST:127.0.0.1}
       port: 6379
-      database: 0
+      database: 12
       password: ${REDIS_PASSWORD:}
       lettuce:
         pool:
@@ -82,3 +82,4 @@ app-config:
   # 多个key用,分割
   apiKeys: ${API_KEYS:your api key}
   apiHost: ${API_HOST:https://api.openai.com}
+  dailyLimit: ${DEFAULT_DAILY_LIMIT:10}

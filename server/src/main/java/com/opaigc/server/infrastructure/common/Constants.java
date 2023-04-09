@@ -15,6 +15,9 @@ public class Constants {
 
 	public static final String USER_CODE_KEY = "code";
 
+	public static final String CHAT_STREAM_COMPLETED_TOPIC = "chat.stream.completed.topic";
+
+
 	public static final String LOGIN_LOCKED_TIMES = "%s.login.times.%s";
 
 	public static final String LOGIN_TOKEN = "%s.login.token.%s";

@@ -23,6 +23,7 @@ import com.opaigc.server.infrastructure.common.Constants;
 import com.opaigc.server.infrastructure.jwt.JwtTokenProvider;
 import com.opaigc.server.infrastructure.redis.RedisUtil;
 
+import jakarta.servlet.Filter;
 import lombok.extern.slf4j.Slf4j;
 
 /**

@@ -19,5 +19,7 @@ public interface UserService extends IService<User> {
 
 	User getByCodeOrElseThrow(String code);
 
+	Optional<User> getByCode(String code);
+
 	Boolean delete(Long id);
 }
