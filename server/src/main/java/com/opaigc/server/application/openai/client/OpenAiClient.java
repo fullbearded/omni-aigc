@@ -69,7 +69,7 @@ public class OpenAiClient {
 		this.webClient = WebClient.builder().defaultHeader(HttpHeaders.CONTENT_TYPE, "application/json").build();
 	}
 
-	public Flux<String> getChatResponse(String authorization, String sessionId, List<OpenAiService.CompletionsRequest.Message> messages,
+	public Flux<String> getChatResponse(String authorization, String sessionId, List<OpenAiService.Message> messages,
 																			Integer maxTokens, Double temperature, Double topP) {
 		JSONObject params = new JSONObject();
 

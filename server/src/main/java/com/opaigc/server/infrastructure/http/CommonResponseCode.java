@@ -48,6 +48,7 @@ public enum CommonResponseCode implements ApiResponseCode {
 	LOGIN_EXPIRED("200004", "登录已过期，请重新登录！", FORBIDDEN.value()),
 	USER_NOT_FOUND("200005", "用户未找到", NOT_FOUND.value()),
 	ACCOUNT_LOGIN_OTHER_DEVICE("200006", "账号在其他设备登录", UNAUTHORIZED.value()),
+	REMOTE_IP_MAX_LIMIT("200007", "未登录用户访问次数超过限制,请登录", UNAUTHORIZED.value()),
 
 
 	// 业务类错误

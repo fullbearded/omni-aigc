@@ -33,9 +33,9 @@ public class TokenCounter {
 		return count;
 	}
 
-	public int countMessages(List<OpenAiService.CompletionsRequest.Message> messages) {
+	public int countMessages(List<OpenAiService.Message> messages) {
 		int count = 0;
-		for (OpenAiService.CompletionsRequest.Message message : messages) {
+		for (OpenAiService.Message message : messages) {
 			count += countTokens(message.getContent());
 			count += countTokens(message.getRole());
 		}

@@ -49,7 +49,8 @@ public class Constants {
 		 * because the WebSocket connection is a long connection, Spring Security will intercept the request and return 401
 		 **/
 		"/api/chat/stream",
-		"/api/auth/registration"
+		"/api/auth/registration",
+		"/api/chat/stream/anonymous"
 	};
 
 }

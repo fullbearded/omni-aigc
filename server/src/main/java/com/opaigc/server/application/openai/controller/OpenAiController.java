@@ -19,7 +19,9 @@ import com.opaigc.server.infrastructure.exception.AppException;
 import com.opaigc.server.infrastructure.http.ApiResponse;
 import com.opaigc.server.infrastructure.http.CommonResponseCode;
 import com.opaigc.server.infrastructure.jwt.JwtTokenProvider;
+import com.opaigc.server.infrastructure.utils.IPLimiter;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -60,6 +62,20 @@ public class OpenAiController {
 
 	@Autowired
 	private UserChatService userChatService;
+
+	private final IPLimiter limiter = new IPLimiter(3);
+
+	/**
+	 * Chat 流式返回
+	 */
+	@PostMapping(value = "/chat/stream/anonymous", produces = MediaType.TEXT_EVENT_STREAM_VALUE + ";charset=UTF-8")
+	@CrossOrigin(origins = "*")
+	public Flux<String> streamCompletionsAnonymous(@RequestBody OpenAiService.CompletionsAnonymousRequest req, HttpServletRequest request) {
+		if (!limiter.isRequestAllowed(request.getRemoteAddr())) {
+			throw new AppException(CommonResponseCode.REMOTE_IP_MAX_LIMIT);
+		}
+		return openAiService.chatSend(MessageType.TEXT, req.getMessages(), "anonymous");
+	}
 
 	/**
 	 * Chat 流式返回

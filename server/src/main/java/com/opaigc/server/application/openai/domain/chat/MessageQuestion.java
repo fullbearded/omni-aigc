@@ -22,9 +22,9 @@ public class MessageQuestion {
 	private MessageType messageType;
 	private String message;
 	private Date date;
-	private List<OpenAiService.CompletionsRequest.Message> messages;
+	private List<OpenAiService.Message> messages;
 
-	public MessageQuestion(MessageType messageType, List<OpenAiService.CompletionsRequest.Message> messages) {
+	public MessageQuestion(MessageType messageType, List<OpenAiService.Message> messages) {
 		this.messageType = messageType;
 		this.messages = messages;
 		this.date = new Date();

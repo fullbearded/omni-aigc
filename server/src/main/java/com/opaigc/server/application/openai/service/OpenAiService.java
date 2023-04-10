@@ -27,7 +27,7 @@ public interface OpenAiService extends CompletedCallBack {
 
 	Flux<String> chatSend(MessageType type, String content, String sessionId);
 
-	Flux<String> chatSend(MessageType type, List<CompletionsRequest.Message> messages, String sessionId);
+	Flux<String> chatSend(MessageType type, List<Message> messages, String sessionId);
 
 
 	CreditGrantsResponse creditGrants(String key);
@@ -40,21 +40,29 @@ public interface OpenAiService extends CompletedCallBack {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Builder
+	class CompletionsAnonymousRequest {
+		@NotEmpty(message = "messages is required")
+		private List<Message> messages;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Builder
+	class Message {
+		private String role;
+		private String content;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Builder
 	class CompletionsRequest {
 		@NotEmpty(message = "messages is required")
 		private List<Message> messages;
 		@NotBlank(message = "token is required")
 		private String token;
-
-		@Data
-		@NoArgsConstructor
-		@AllArgsConstructor
-		@Builder
-		public static class Message {
-			private String role;
-			private String content;
-		}
-
 	}
 
 	@Data

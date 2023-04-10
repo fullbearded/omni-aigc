@@ -38,7 +38,7 @@ public class OpenAiServiceImpl implements OpenAiService {
 	public Flux<String> chatSend(MessageType type, String prompt, String sessionId) {
 		OpenAiClient openAiClient = buildClient();
 		MessageQuestion userMessage = new MessageQuestion(MessageType.TEXT, prompt);
-		List<CompletionsRequest.Message> messages = List.of(CompletionsRequest.Message.builder().role("user").content(prompt).build());
+		List<Message> messages = List.of(Message.builder().role("user").content(prompt).build());
 		return sendToOpenAi(sessionId, messages, openAiClient, userMessage);
 	}
 
@@ -50,13 +50,13 @@ public class OpenAiServiceImpl implements OpenAiService {
 	 * @see OpenAiService#chatSend(MessageType, List, String)
 	 **/
 	@Override
-	public Flux<String> chatSend(MessageType type, List<CompletionsRequest.Message> messages, String sessionId) {
+	public Flux<String> chatSend(MessageType type, List<Message> messages, String sessionId) {
 		OpenAiClient openAiClient = buildClient();
 		MessageQuestion userMessage = new MessageQuestion(MessageType.TEXT, messages);
 		return sendToOpenAi(sessionId, messages, openAiClient, userMessage);
 	}
 
-	private Flux<String> sendToOpenAi(String sessionId, List<CompletionsRequest.Message> messages,
+	private Flux<String> sendToOpenAi(String sessionId, List<Message> messages,
 																		OpenAiClient openAiClient, MessageQuestion userMessage) {
 		return Flux.create(emitter -> {
 			OpenAISubscriber subscriber = new OpenAISubscriber(emitter, sessionId, this, userMessage);
