@@ -1,8 +1,7 @@
 package com.opaigc.server.infrastructure.utils;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 描述
@@ -12,15 +11,41 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 
 public class IPLimiter {
-	private final Map<String, AtomicLong> ipCounter = new ConcurrentHashMap<>();
-	private final long limit;
+	private final ConcurrentHashMap<String, AtomicInteger> ipCounter;
+	private final ConcurrentHashMap<String, Long> ipTimeStamps;
 
-	public IPLimiter(long limit) {
+	private final int limit;
+	private final long window;
+
+	public IPLimiter(int limit, long window) {
+		this.ipCounter = new ConcurrentHashMap<>();
+		this.ipTimeStamps = new ConcurrentHashMap<>();
 		this.limit = limit;
+		this.window = window;
 	}
 
-	public boolean isRequestAllowed(String clientIP) {
-		AtomicLong count = ipCounter.computeIfAbsent(clientIP, k -> new AtomicLong(0));
-		return count.incrementAndGet() <= limit;
+	public boolean isAllowed(String ip) {
+		long currentTimeMillis = System.currentTimeMillis();
+		AtomicInteger count = ipCounter.get(ip);
+		Long lastTimeMillis = ipTimeStamps.get(ip);
+
+		if (lastTimeMillis != null && (currentTimeMillis - lastTimeMillis) > window) {
+			ipCounter.remove(ip);
+			ipTimeStamps.remove(ip);
+			return isAllowed(ip);
+		}
+
+		if (count == null) {
+			ipCounter.put(ip, new AtomicInteger(1));
+			ipTimeStamps.put(ip, currentTimeMillis);
+			return true;
+		}
+
+		if (count.get() < limit) {
+			count.incrementAndGet();
+			return true;
+		}
+
+		return false;
 	}
 }

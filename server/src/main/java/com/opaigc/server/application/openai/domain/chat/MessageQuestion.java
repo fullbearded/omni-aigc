@@ -22,11 +22,13 @@ public class MessageQuestion {
 	private MessageType messageType;
 	private String message;
 	private Date date;
+	private String remoteIp;
 	private List<OpenAiService.Message> messages;
 
-	public MessageQuestion(MessageType messageType, List<OpenAiService.Message> messages) {
+	public MessageQuestion(MessageType messageType, List<OpenAiService.Message> messages, String remoteIp) {
 		this.messageType = messageType;
 		this.messages = messages;
+		this.remoteIp = remoteIp;
 		this.date = new Date();
 	}
 

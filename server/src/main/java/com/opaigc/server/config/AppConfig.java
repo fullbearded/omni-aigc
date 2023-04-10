@@ -48,7 +48,7 @@ public class AppConfig {
 
 	@Data
 	public static class Proxy {
-		private Boolean enable;
+		private String enable;
 		private String host;
 		private Integer port;
 	}

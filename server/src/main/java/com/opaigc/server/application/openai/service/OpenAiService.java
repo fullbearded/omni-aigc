@@ -27,7 +27,7 @@ public interface OpenAiService extends CompletedCallBack {
 
 	Flux<String> chatSend(MessageType type, String content, String sessionId);
 
-	Flux<String> chatSend(MessageType type, List<Message> messages, String sessionId);
+	Flux<String> chatSend(MessageType type, List<Message> messages, String sessionId, String remoteIp);
 
 
 	CreditGrantsResponse creditGrants(String key);

@@ -47,12 +47,12 @@ public class OpenAiServiceImpl implements OpenAiService {
 	 * @param messages  消息列表
 	 * @param sessionId 会话id 目前是用户Code
 	 * @return Flux<String>
-	 * @see OpenAiService#chatSend(MessageType, List, String)
+	 * @see OpenAiService#chatSend(MessageType, List, String, String)
 	 **/
 	@Override
-	public Flux<String> chatSend(MessageType type, List<Message> messages, String sessionId) {
+	public Flux<String> chatSend(MessageType type, List<Message> messages, String sessionId, String remoteIp) {
 		OpenAiClient openAiClient = buildClient();
-		MessageQuestion userMessage = new MessageQuestion(MessageType.TEXT, messages);
+		MessageQuestion userMessage = new MessageQuestion(MessageType.TEXT, messages, remoteIp);
 		return sendToOpenAi(sessionId, messages, openAiClient, userMessage);
 	}
 

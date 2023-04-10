@@ -15,6 +15,7 @@ import com.opaigc.server.application.openai.service.OpenAiService;
 import com.opaigc.server.application.user.domain.UserChat;
 import com.opaigc.server.application.user.service.UserChatService;
 import com.opaigc.server.application.user.service.UserService;
+import com.opaigc.server.infrastructure.common.Constants;
 import com.opaigc.server.infrastructure.exception.AppException;
 import com.opaigc.server.infrastructure.http.ApiResponse;
 import com.opaigc.server.infrastructure.http.CommonResponseCode;
@@ -63,7 +64,7 @@ public class OpenAiController {
 	@Autowired
 	private UserChatService userChatService;
 
-	private final IPLimiter limiter = new IPLimiter(3);
+	private final IPLimiter limiter = new IPLimiter(3, 15 * 60 * 1000);
 
 	/**
 	 * Chat 流式返回
@@ -71,10 +72,10 @@ public class OpenAiController {
 	@PostMapping(value = "/chat/stream/anonymous", produces = MediaType.TEXT_EVENT_STREAM_VALUE + ";charset=UTF-8")
 	@CrossOrigin(origins = "*")
 	public Flux<String> streamCompletionsAnonymous(@RequestBody OpenAiService.CompletionsAnonymousRequest req, HttpServletRequest request) {
-		if (!limiter.isRequestAllowed(request.getRemoteAddr())) {
+		if (!limiter.isAllowed(request.getRemoteAddr())) {
 			throw new AppException(CommonResponseCode.REMOTE_IP_MAX_LIMIT);
 		}
-		return openAiService.chatSend(MessageType.TEXT, req.getMessages(), "anonymous");
+		return openAiService.chatSend(MessageType.TEXT, req.getMessages(), Constants.CHAT_WITH_ANONYMOUS_USER_KEY, request.getRemoteAddr());
 	}
 
 	/**
@@ -82,7 +83,7 @@ public class OpenAiController {
 	 */
 	@PostMapping(value = "/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE + ";charset=UTF-8")
 	@CrossOrigin(origins = "*")
-	public Flux<String> streamCompletions(@RequestBody OpenAiService.CompletionsRequest req) {
+	public Flux<String> streamCompletions(@RequestBody OpenAiService.CompletionsRequest req, HttpServletRequest request) {
 		String userCode = null;
 		String securityToken = req.getToken();
 		if (jwtTokenProvider.validateToken(securityToken)) {
@@ -90,7 +91,7 @@ public class OpenAiController {
 		}
 		validateUser(userCode);
 
-		return openAiService.chatSend(MessageType.TEXT, req.getMessages(), userCode);
+		return openAiService.chatSend(MessageType.TEXT, req.getMessages(), userCode, request.getRemoteAddr());
 	}
 
 	private void validateUser(String userCode) {

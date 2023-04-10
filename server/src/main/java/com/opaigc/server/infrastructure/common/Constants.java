@@ -27,6 +27,8 @@ public class Constants {
 	public static final String USER_LOGIN_PATH = "/api/auth/login";
 	public static final String USER_LOGOUT_PATH = "/api/auth/logout";
 
+	public static final String CHAT_WITH_ANONYMOUS_USER_KEY = "anonymous";
+
 	public static final String MOBILE_REGEX = "^1[3-9]\\d{9}$";
 
 	public static final String[] STATIC_WHITELIST = {

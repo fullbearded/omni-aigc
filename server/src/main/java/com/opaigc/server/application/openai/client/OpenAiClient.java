@@ -38,8 +38,8 @@ public class OpenAiClient {
 
 	public OpenAiClient(AppConfig appConfig) {
 		this.appConfig = appConfig;
-		Boolean proxyEnabled = Optional.ofNullable(appConfig.getProxy()).map(AppConfig.Proxy::getEnable).orElse(false);
-		if (proxyEnabled) {
+		String proxyEnabled = Optional.ofNullable(appConfig.getProxy()).map(AppConfig.Proxy::getEnable).orElse("false");
+		if ("true".equals(proxyEnabled)) {
 			initWithProxy();
 		} else {
 			initWithNoProxy();

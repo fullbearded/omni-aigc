@@ -14,6 +14,7 @@ import com.opaigc.server.application.user.event.ChatStreamCompletedEvent;
 import com.opaigc.server.application.user.service.MemberService;
 import com.opaigc.server.application.user.service.UserChatService;
 import com.opaigc.server.application.user.service.UserService;
+import com.opaigc.server.infrastructure.common.Constants;
 import com.opaigc.server.infrastructure.utils.TokenCounter;
 
 import java.util.Optional;
@@ -50,16 +51,22 @@ public class ChatStreamCompletedSubscriber {
 	public void receiveMessage(String message) {
 		log.info("ChatStreamCompletedEvent:{}", message);
 		ChatStreamCompletedEvent event = JSONObject.parseObject(message, ChatStreamCompletedEvent.class);
-		Optional<Member> memberOptional = memberCache.getUnchecked(event.getSessionId());
-		if (memberOptional.isEmpty()) {
-			return;
+
+		Long chatUserId = 0l;
+
+		if (!event.getSessionId().equals(Constants.CHAT_WITH_ANONYMOUS_USER_KEY)) {
+			Optional<Member> memberOptional = memberCache.getUnchecked(event.getSessionId());
+			if (memberOptional.isEmpty()) {
+				return;
+			}
+			memberService.usedQuotaIncrement(memberOptional.get(), 1);
+			chatUserId = memberOptional.get().getUserId();
 		}
-		memberService.usedQuotaIncrement(memberOptional.get(), 1);
 
 		TokenCounter tokenCounter = new TokenCounter();
 		int tokenCount = tokenCounter.countMessages(event.getQuestions().getMessages());
 
-		UserChat userChat = UserChat.builder().userId(memberOptional.get().getUserId())
+		UserChat userChat = UserChat.builder().userId(chatUserId)
 			.token(tokenCount)
 			.questions(JSONObject.parseObject(JSONObject.toJSONString(event.getQuestions())))
 			.answers(new JSONObject().fluentPut("answer", event.getResponse()))
