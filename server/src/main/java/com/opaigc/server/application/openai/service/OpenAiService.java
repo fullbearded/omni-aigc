@@ -3,10 +3,10 @@ package com.opaigc.server.application.openai.service;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.opaigc.server.application.openai.domain.chat.MessageType;
 import com.opaigc.server.application.openai.listener.CompletedCallBack;
+import com.opaigc.server.application.user.domain.UserChat;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -29,12 +29,24 @@ public interface OpenAiService extends CompletedCallBack {
 
 	Flux<String> chatSend(MessageType type, List<Message> messages, String sessionId, String remoteIp);
 
-
 	CreditGrantsResponse creditGrants(String key);
 
 	ModerationData moderation(String prompt);
 
 	Mono<Boolean> checkContent(String prompt);
+
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Builder
+	class ChatParameters {
+		private MessageType type;
+		private List<Message> messages;
+		private String sessionId;
+		private String remoteIp;
+		private UserChat.ChatTypeEnum chatType;
+	}
 
 	@Data
 	@NoArgsConstructor

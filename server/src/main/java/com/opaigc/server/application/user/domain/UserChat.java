@@ -33,6 +33,16 @@ public class UserChat {
 	private Long userId;
 
 	/**
+	 * 使用的APP id
+	 */
+	private Long appId;
+
+ 	/**
+	 * 聊天类型，FREE 免费， PAID 付费
+	 */
+	private ChatTypeEnum type;
+
+	/**
 	 * token 大小
 	 */
 	private Integer token;
@@ -58,5 +68,10 @@ public class UserChat {
 	 * 创建人
 	 **/
 	private String createdBy;
+
+	public enum ChatTypeEnum {
+		FREE,
+		PAID
+	}
 
 }
