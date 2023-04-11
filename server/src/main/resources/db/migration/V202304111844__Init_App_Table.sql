@@ -9,10 +9,11 @@ CREATE TABLE `app`
 	`name`         VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'APP名称',
 	`icon`         VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'APP图标',
 	`description`  VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'APP描述',
-	`usedCount`    INT          NOT NULL DEFAULT 0 COMMENT '使用次数',
-	`paidUseCount` INT          NOT NULL DEFAULT 0 COMMENT '付费使用次数',
+	`used_count`    INT          NOT NULL DEFAULT 0 COMMENT '使用次数',
+	`paid_use_count` INT          NOT NULL DEFAULT 0 COMMENT '付费使用次数',
 	`forms`        JSON         NOT NULL COMMENT 'APP表单模板',
 	`roles`        JSON         NOT NULL COMMENT 'APP预置问题模板',
+	`status`       VARCHAR(10)  NOT NULL DEFAULT 'ENABLED' COMMENT '状态: ENABLED 启用， DISABLED 停用',
 	`deleted_by`   VARCHAR(64)           DEFAULT '' COMMENT '删除者',
 	`deleted_at`   DATETIME              DEFAULT NULL COMMENT '删除时间',
 	`created_at`   DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
@@ -24,3 +25,7 @@ CREATE TABLE `app`
 ) ENGINE = InnoDB
 	AUTO_INCREMENT = 1
 	DEFAULT CHARSET = utf8mb4 COMMENT ='会员信息表';
+
+INSERT INTO `app`
+VALUES (1, 0, 'a8dpite78tly0nbgacu9vxf2v8th4huu', '默认应用', '', '默认应用', 0, 0, '[]', '[]', 'ENABLED','', NULL,
+				'2020-05-06 15:00:00.000', 'admin', '2020-05-06 15:00:00.000', 'admin');

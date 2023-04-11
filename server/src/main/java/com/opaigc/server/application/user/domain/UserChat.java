@@ -37,10 +37,11 @@ public class UserChat {
 	 */
 	private Long appId;
 
- 	/**
+	/**
 	 * 聊天类型，FREE 免费， PAID 付费
 	 */
-	private ChatTypeEnum type;
+	@TableField(value = "type")
+	private ChatTypeEnum chatType;
 
 	/**
 	 * token 大小

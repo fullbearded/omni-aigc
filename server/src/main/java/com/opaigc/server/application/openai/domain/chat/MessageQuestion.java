@@ -1,9 +1,12 @@
 package com.opaigc.server.application.openai.domain.chat;
 
 import com.opaigc.server.application.openai.service.OpenAiService;
+import com.opaigc.server.application.user.domain.UserChat;
+import com.opaigc.server.infrastructure.common.Constants;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,17 +27,17 @@ public class MessageQuestion {
 	private Date date;
 	private String remoteIp;
 	private List<OpenAiService.Message> messages;
+	private UserChat.ChatTypeEnum chatType;
+	private Long appId;
 
-	public MessageQuestion(MessageType messageType, List<OpenAiService.Message> messages, String remoteIp) {
+	public MessageQuestion(MessageType messageType, List<OpenAiService.Message> messages,
+												 String remoteIp, UserChat.ChatTypeEnum chatType,
+												 Long appId) {
+		this.appId = Optional.ofNullable(appId).orElse(Constants.DEFAULT_APP_ID);
 		this.messageType = messageType;
 		this.messages = messages;
 		this.remoteIp = remoteIp;
-		this.date = new Date();
-	}
-
-	public MessageQuestion(MessageType messageType, String message) {
-		this.messageType = messageType;
-		this.message = message;
+		this.chatType = chatType;
 		this.date = new Date();
 	}
 }

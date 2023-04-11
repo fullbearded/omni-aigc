@@ -11,6 +11,7 @@ import com.opaigc.server.application.user.domain.Member;
 import com.opaigc.server.application.user.domain.User;
 import com.opaigc.server.application.user.domain.UserChat;
 import com.opaigc.server.application.user.event.ChatStreamCompletedEvent;
+import com.opaigc.server.application.user.service.AppService;
 import com.opaigc.server.application.user.service.MemberService;
 import com.opaigc.server.application.user.service.UserChatService;
 import com.opaigc.server.application.user.service.UserService;
@@ -38,6 +39,8 @@ public class ChatStreamCompletedSubscriber {
 	private MemberService memberService;
 	@Autowired
 	private UserChatService userChatService;
+	@Autowired
+	private AppService appService;
 
 	LoadingCache<String, Optional<Member>> memberCache = CacheBuilder.newBuilder()
 		.refreshAfterWrite(CACHE_REFRESH_MINUTES, TimeUnit.MINUTES)
@@ -54,12 +57,14 @@ public class ChatStreamCompletedSubscriber {
 
 		Long chatUserId = 0l;
 
+		// 非匿名用户，记录用户使用量
 		if (!event.getSessionId().equals(Constants.CHAT_WITH_ANONYMOUS_USER_KEY)) {
 			Optional<Member> memberOptional = memberCache.getUnchecked(event.getSessionId());
 			if (memberOptional.isEmpty()) {
 				return;
 			}
 			memberService.usedQuotaIncrement(memberOptional.get(), 1);
+			appService.usageIncrement(event.getQuestions().getAppId(), memberOptional.get().isVip(), 1);
 			chatUserId = memberOptional.get().getUserId();
 		}
 
@@ -70,6 +75,8 @@ public class ChatStreamCompletedSubscriber {
 			.token(tokenCount)
 			.questions(JSONObject.parseObject(JSONObject.toJSONString(event.getQuestions())))
 			.answers(new JSONObject().fluentPut("answer", event.getResponse()))
+			.appId(event.getQuestions().getAppId())
+			.chatType(event.getQuestions().getChatType())
 			.createdBy(event.getSessionId())
 			.build();
 		userChatService.save(userChat);

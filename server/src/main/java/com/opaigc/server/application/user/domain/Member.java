@@ -83,4 +83,8 @@ public class Member {
 		return totalQuota == 0 || isExpired();
 	}
 
+	public Boolean isVip() {
+		return !isFreeUser();
+	}
+
 }

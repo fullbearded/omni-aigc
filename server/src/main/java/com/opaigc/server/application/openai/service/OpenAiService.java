@@ -25,9 +25,7 @@ import reactor.core.publisher.Mono;
  */
 public interface OpenAiService extends CompletedCallBack {
 
-	Flux<String> chatSend(MessageType type, String content, String sessionId);
-
-	Flux<String> chatSend(MessageType type, List<Message> messages, String sessionId, String remoteIp);
+	Flux<String> chatSend(ChatParameters parameters);
 
 	CreditGrantsResponse creditGrants(String key);
 
@@ -46,6 +44,7 @@ public interface OpenAiService extends CompletedCallBack {
 		private String sessionId;
 		private String remoteIp;
 		private UserChat.ChatTypeEnum chatType;
+		private String appCode;
 	}
 
 	@Data

@@ -60,7 +60,6 @@ public class OpenAiController {
 	private JwtTokenProvider jwtTokenProvider;
 	@Autowired
 	private UserService userService;
-
 	@Autowired
 	private UserChatService userChatService;
 
@@ -75,7 +74,11 @@ public class OpenAiController {
 		if (!limiter.isAllowed(request.getRemoteAddr())) {
 			throw new AppException(CommonResponseCode.REMOTE_IP_MAX_LIMIT);
 		}
-		return openAiService.chatSend(MessageType.TEXT, req.getMessages(), Constants.CHAT_WITH_ANONYMOUS_USER_KEY, request.getRemoteAddr());
+
+		OpenAiService.ChatParameters parameters =
+			OpenAiService.ChatParameters.builder().chatType(UserChat.ChatTypeEnum.FREE).messages(req.getMessages())
+				.remoteIp(request.getRemoteAddr()).type(MessageType.TEXT).sessionId(Constants.CHAT_WITH_ANONYMOUS_USER_KEY).build();
+		return openAiService.chatSend(parameters);
 	}
 
 	/**
@@ -89,20 +92,24 @@ public class OpenAiController {
 		if (jwtTokenProvider.validateToken(securityToken)) {
 			userCode = jwtTokenProvider.getUserCode(securityToken);
 		}
-		validateUser(userCode);
+		UserChat.ChatTypeEnum chatType = validateUserAndGetChatType(userCode);
 
-		return openAiService.chatSend(MessageType.TEXT, req.getMessages(), userCode, request.getRemoteAddr());
+		OpenAiService.ChatParameters parameters = OpenAiService.ChatParameters.builder().chatType(chatType)
+			.messages(req.getMessages()).remoteIp(request.getRemoteAddr()).type(MessageType.TEXT).sessionId(userCode).build();
+		return openAiService.chatSend(parameters);
 	}
 
-	private void validateUser(String userCode) {
+	private UserChat.ChatTypeEnum validateUserAndGetChatType(String userCode) {
 		if (Objects.isNull(userCode)) {
 			throw new AppException(CommonResponseCode.ACCESS_DENIED);
 		}
 		UserService.UserMemberDTO userMemberDTO = userService.getUserInfo(userCode);
 		if (userMemberDTO.isFreeUser()) {
 			validateFreeUser(userMemberDTO);
+			return UserChat.ChatTypeEnum.FREE;
 		} else {
 			validateVipUser(userMemberDTO);
+			return UserChat.ChatTypeEnum.PAID;
 		}
 	}
 
@@ -117,8 +124,9 @@ public class OpenAiController {
 		LocalDateTime startOfDay = today.atStartOfDay();
 		LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
 
-		Long todayUserChatCount = userChatService.lambdaQuery().eq(UserChat::getUserId, userMemberDTO.getId())
-			.between(UserChat::getCreatedAt, startOfDay, endOfDay).count();
+		Long todayUserChatCount =
+			userChatService.lambdaQuery().eq(UserChat::getUserId, userMemberDTO.getId()).between(UserChat::getCreatedAt, startOfDay, endOfDay)
+				.count();
 		if (todayUserChatCount >= userMemberDTO.getDailyLimit()) {
 			throw new AppException(CommonResponseCode.USER_DAILY_USAGE_LIMIT);
 		}
@@ -147,8 +155,6 @@ public class OpenAiController {
 	public ApiResponse checkContent(@RequestBody @Validated ModerationRequest req) {
 		return ApiResponse.success(new JSONObject().fluentPut("status", openAiService.checkContent(req.getPrompt()).block()));
 	}
-
-
 
 
 	@Data

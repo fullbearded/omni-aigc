@@ -34,3 +34,4 @@ out
 
 include server/.gitignore
 docker-compose/docker-compose-prod.yml
+server.iml

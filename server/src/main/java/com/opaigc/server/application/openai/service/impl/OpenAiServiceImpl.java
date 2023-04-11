@@ -9,12 +9,14 @@ import com.opaigc.server.application.openai.domain.chat.MessageQuestion;
 import com.opaigc.server.application.openai.domain.chat.MessageType;
 import com.opaigc.server.application.openai.listener.OpenAISubscriber;
 import com.opaigc.server.application.openai.service.OpenAiService;
+import com.opaigc.server.application.user.domain.App;
 import com.opaigc.server.application.user.event.ChatStreamCompletedEvent;
+import com.opaigc.server.application.user.service.AppService;
 import com.opaigc.server.config.AppConfig;
 import com.opaigc.server.infrastructure.common.Constants;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -33,35 +35,28 @@ public class OpenAiServiceImpl implements OpenAiService {
 	private AppConfig appConfig;
 	@Autowired
 	private StringRedisTemplate redisTemplate;
-
-	@Override
-	public Flux<String> chatSend(MessageType type, String prompt, String sessionId) {
-		OpenAiClient openAiClient = buildClient();
-		MessageQuestion userMessage = new MessageQuestion(MessageType.TEXT, prompt);
-		List<Message> messages = List.of(Message.builder().role("user").content(prompt).build());
-		return sendToOpenAi(sessionId, messages, openAiClient, userMessage);
-	}
+	@Autowired
+	private AppService appService;
 
 	/**
-	 * @param type      消息类型
-	 * @param messages  消息列表
-	 * @param sessionId 会话id 目前是用户Code
+	 * @param parameters ChatParameters
 	 * @return Flux<String>
-	 * @see OpenAiService#chatSend(MessageType, List, String, String)
 	 **/
 	@Override
-	public Flux<String> chatSend(MessageType type, List<Message> messages, String sessionId, String remoteIp) {
+	public Flux<String> chatSend(ChatParameters parameters) {
 		OpenAiClient openAiClient = buildClient();
-		MessageQuestion userMessage = new MessageQuestion(MessageType.TEXT, messages, remoteIp);
-		return sendToOpenAi(sessionId, messages, openAiClient, userMessage);
+
+		App app = appService.getByCode(parameters.getAppCode());
+		MessageQuestion userMessage = new MessageQuestion(MessageType.TEXT, parameters.getMessages(),
+			parameters.getRemoteIp(), parameters.getChatType(), Optional.ofNullable(app).map(App::getId).orElse(null));
+		return sendToOpenAi(parameters.getSessionId(), openAiClient, userMessage);
 	}
 
-	private Flux<String> sendToOpenAi(String sessionId, List<Message> messages,
-																		OpenAiClient openAiClient, MessageQuestion userMessage) {
+	private Flux<String> sendToOpenAi(String sessionId, OpenAiClient openAiClient, MessageQuestion userMessage) {
 		return Flux.create(emitter -> {
 			OpenAISubscriber subscriber = new OpenAISubscriber(emitter, sessionId, this, userMessage);
 			Flux<String> openAiResponse =
-				openAiClient.getChatResponse(appConfig.getApiToken(), sessionId, messages, null, null, null);
+				openAiClient.getChatResponse(appConfig.getApiToken(), sessionId, userMessage.getMessages(), null, null, null);
 			openAiResponse.subscribe(subscriber);
 			emitter.onDispose(subscriber);
 		});
