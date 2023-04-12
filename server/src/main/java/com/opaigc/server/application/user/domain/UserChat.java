@@ -40,8 +40,7 @@ public class UserChat {
 	/**
 	 * 聊天类型，FREE 免费， PAID 付费
 	 */
-	@TableField(value = "type")
-	private ChatTypeEnum chatType;
+	private ChatCategoryEnum category;
 
 	/**
 	 * token 大小
@@ -70,7 +69,7 @@ public class UserChat {
 	 **/
 	private String createdBy;
 
-	public enum ChatTypeEnum {
+	public enum ChatCategoryEnum {
 		FREE,
 		PAID
 	}

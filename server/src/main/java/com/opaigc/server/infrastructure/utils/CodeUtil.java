@@ -1,8 +1,8 @@
 package com.opaigc.server.infrastructure.utils;
 
 
-import java.security.SecureRandom;
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * 描述
@@ -33,17 +33,9 @@ public class CodeUtil {
 		return convertToBase32SerialCode(ret, codeLen);
 	}
 
-	public static String generateRandomUserCode(int length) {
-		SecureRandom random = new SecureRandom();
-		StringBuilder stringBuilder = new StringBuilder();
-		String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-		for (int i = 0; i < length; i++) {
-			int index = random.nextInt(characters.length());
-			stringBuilder.append(characters.charAt(index));
-		}
-
-		return stringBuilder.toString();
+	public static String generateRandomUserCode() {
+		UUID uuid = UUID.randomUUID();
+		return uuid.toString().replaceAll("-", "");
 	}
 
 	private static int calculateDataBitLen(int totalBitLen, int checkBitLen, int flagBitLen) {

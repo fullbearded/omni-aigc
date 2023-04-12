@@ -27,11 +27,11 @@ public class MessageQuestion {
 	private Date date;
 	private String remoteIp;
 	private List<OpenAiService.Message> messages;
-	private UserChat.ChatTypeEnum chatType;
+	private UserChat.ChatCategoryEnum chatType;
 	private Long appId;
 
 	public MessageQuestion(MessageType messageType, List<OpenAiService.Message> messages,
-												 String remoteIp, UserChat.ChatTypeEnum chatType,
+												 String remoteIp, UserChat.ChatCategoryEnum chatType,
 												 Long appId) {
 		this.appId = Optional.ofNullable(appId).orElse(Constants.DEFAULT_APP_ID);
 		this.messageType = messageType;

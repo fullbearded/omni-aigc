@@ -59,6 +59,8 @@ public enum CommonResponseCode implements ApiResponseCode {
 
 	USER_DAILY_USAGE_LIMIT("300005", "每日使用次数已达上限", BAD_REQUEST.value()),
 	USER_USAGE_REACH_TOTAL_LIMIT("300005", "用户使用次数已达总额, 请重新购买", BAD_REQUEST.value()),
+
+	APP_NAME_EXIST("300006", "应用名称已存在", BAD_REQUEST.value()),
 	;
 
 	private final String code;

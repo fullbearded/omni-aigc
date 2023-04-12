@@ -76,7 +76,7 @@ public class OpenAiController {
 		}
 
 		OpenAiService.ChatParameters parameters =
-			OpenAiService.ChatParameters.builder().chatType(UserChat.ChatTypeEnum.FREE).messages(req.getMessages())
+			OpenAiService.ChatParameters.builder().chatType(UserChat.ChatCategoryEnum.FREE).messages(req.getMessages())
 				.remoteIp(request.getRemoteAddr()).type(MessageType.TEXT).sessionId(Constants.CHAT_WITH_ANONYMOUS_USER_KEY).build();
 		return openAiService.chatSend(parameters);
 	}
@@ -92,24 +92,24 @@ public class OpenAiController {
 		if (jwtTokenProvider.validateToken(securityToken)) {
 			userCode = jwtTokenProvider.getUserCode(securityToken);
 		}
-		UserChat.ChatTypeEnum chatType = validateUserAndGetChatType(userCode);
+		UserChat.ChatCategoryEnum chatType = validateUserAndGetChatType(userCode);
 
 		OpenAiService.ChatParameters parameters = OpenAiService.ChatParameters.builder().chatType(chatType)
 			.messages(req.getMessages()).remoteIp(request.getRemoteAddr()).type(MessageType.TEXT).sessionId(userCode).build();
 		return openAiService.chatSend(parameters);
 	}
 
-	private UserChat.ChatTypeEnum validateUserAndGetChatType(String userCode) {
+	private UserChat.ChatCategoryEnum validateUserAndGetChatType(String userCode) {
 		if (Objects.isNull(userCode)) {
 			throw new AppException(CommonResponseCode.ACCESS_DENIED);
 		}
 		UserService.UserMemberDTO userMemberDTO = userService.getUserInfo(userCode);
 		if (userMemberDTO.isFreeUser()) {
 			validateFreeUser(userMemberDTO);
-			return UserChat.ChatTypeEnum.FREE;
+			return UserChat.ChatCategoryEnum.FREE;
 		} else {
 			validateVipUser(userMemberDTO);
-			return UserChat.ChatTypeEnum.PAID;
+			return UserChat.ChatCategoryEnum.PAID;
 		}
 	}
 

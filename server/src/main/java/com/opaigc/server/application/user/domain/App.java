@@ -1,5 +1,6 @@
 package com.opaigc.server.application.user.domain;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -38,6 +39,19 @@ public class App {
 	 */
 	private String code;
 	/**
+	 * APP类型
+	 **/
+	@TableField(value = "category")
+	private AppCategoryEnum category;
+	/**
+	 * APP推荐
+	 **/
+	private RecommendEnum recommend;
+	/**
+	 * APP点赞
+	 **/
+	private Integer upvote;
+	/**
 	 * APP名称
 	 */
 	private String name;
@@ -62,13 +76,13 @@ public class App {
 	 * e
 	 */
 	@TableField(typeHandler = FastjsonTypeHandler.class)
-	private JSONObject forms;
+	private JSONArray forms;
 	/**
 	 * APP预置问题模板
 	 * e
 	 */
 	@TableField(typeHandler = FastjsonTypeHandler.class)
-	private JSONObject roles;
+	private JSONArray roles;
 	/**
 	 * APP状态
 	 **/
@@ -98,6 +112,19 @@ public class App {
 	 **/
 	private String updatedBy;
 
+	@Getter
+	@RequiredArgsConstructor
+	public enum RecommendEnum {
+		NONE,
+		HOME;
+	}
+
+	@Getter
+	@RequiredArgsConstructor
+	public enum AppCategoryEnum {
+		PUBLIC,
+		PRIVATE;
+	}
 
 	@Getter
 	@RequiredArgsConstructor

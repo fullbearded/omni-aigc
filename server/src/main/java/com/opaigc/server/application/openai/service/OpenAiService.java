@@ -43,7 +43,7 @@ public interface OpenAiService extends CompletedCallBack {
 		private List<Message> messages;
 		private String sessionId;
 		private String remoteIp;
-		private UserChat.ChatTypeEnum chatType;
+		private UserChat.ChatCategoryEnum chatType;
 		private String appCode;
 	}
 

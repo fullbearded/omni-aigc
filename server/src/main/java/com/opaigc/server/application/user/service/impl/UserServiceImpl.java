@@ -39,7 +39,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 		User user = User.builder().mobile(req.getMobile())
 			.username(req.getUsername())
 			.password(passwordEncoder.encode(req.getPassword()))
-			.code(CodeUtil.generateRandomUserCode(32))
+			.code(CodeUtil.generateRandomUserCode())
 			.createdBy(req.getUsername())
 			.updatedBy(req.getUsername())
 			.registerIp(req.getRegisterIp())

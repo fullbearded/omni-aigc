@@ -76,7 +76,7 @@ public class ChatStreamCompletedSubscriber {
 			.questions(JSONObject.parseObject(JSONObject.toJSONString(event.getQuestions())))
 			.answers(new JSONObject().fluentPut("answer", event.getResponse()))
 			.appId(event.getQuestions().getAppId())
-			.chatType(event.getQuestions().getChatType())
+			.category(event.getQuestions().getChatType())
 			.createdBy(event.getSessionId())
 			.build();
 		userChatService.save(userChat);
