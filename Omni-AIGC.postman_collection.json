@@ -1,0 +1,1205 @@
+{
+	"info": {
+		"_postman_id": "1c62b070-0607-4ee1-ba3d-7680b8148fb9",
+		"name": "Omni-AIGC",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "696458"
+	},
+	"item": [
+		{
+			"name": "用户登录",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"123456\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/auth/login",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "用户登录",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"jerry\",\n    \"password\": \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/auth/login",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Authorization",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImNvZGUiOiI3YzhhZWE5ZDA0ZTcwYjNmM2RmMjg4MTVmNmU4YTJhYiIsImlhdCI6MTY4MDk0ODU5NCwiZXhwIjoxNjgxMDM0OTk0fQ.ccuDe-Y2osKGHWrwq0frVadlRttCajVqHblVBH_w8F0"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=UTF-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "259"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 08 Apr 2023 10:09:54 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"code\": \"200\",\n    \"message\": \"请求成功\",\n    \"data\": {\n        \"token\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImNvZGUiOiI3YzhhZWE5ZDA0ZTcwYjNmM2RmMjg4MTVmNmU4YTJhYiIsImlhdCI6MTY4MDk0ODU5NCwiZXhwIjoxNjgxMDM0OTk0fQ.ccuDe-Y2osKGHWrwq0frVadlRttCajVqHblVBH_w8F0\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "用户注册",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"admin\",\n    \"mobile\": \"15828566956\",\n    \"password\": \"1234\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/auth/registration",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"registration"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "用户注册",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin1\",\n    \"mobile\": \"15828534911\",\n    \"password\": \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/auth/registration",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"registration"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 09 Apr 2023 14:25:20 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"code\": null,\n    \"message\": \"请求成功\",\n    \"data\": null\n}"
+				}
+			]
+		},
+		{
+			"name": "用户登出",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY4MDc5MjQ1MSwiZXhwIjoxNjgwODc4ODUxfQ.Wh7PWBBvnEhLA0R6tcwhcr2mq6Ej7rjEZpWIsuWXwYo",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/api/auth/logout",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"logout"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "用户登出",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer  {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/api/auth/logout",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Set-Cookie",
+							"value": "JSESSIONID=; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:10 GMT; Path=/"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=UTF-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "39"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 08 Apr 2023 10:40:44 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"请求成功\"\n}"
+				}
+			]
+		},
+		{
+			"name": "[全局]POSTMAN用户登录",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const host = pm.environment.get('host');",
+							"",
+							"// 设置全局变量",
+							"pm.globals.set('token', '');",
+							"",
+							"// 发送 POST 请求获取 token",
+							"pm.sendRequest({",
+							"  url: `${host}/api/auth/login`,",
+							"  method: 'POST',",
+							"  header: {",
+							"    'Content-Type': 'application/json'",
+							"  },",
+							"  body: {",
+							"    mode: 'raw',",
+							"    raw: JSON.stringify({",
+							"      username: 'admin',",
+							"      password: '123456'",
+							"    })",
+							"  }",
+							"}, function(err, res) {",
+							"  if (err) {",
+							"    console.error(err);",
+							"  } else {",
+							"    // 提取 token",
+							"    pm.globals.set('token', res.json().data.token);",
+							"  }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/api/promotion/types",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"promotion",
+						"types"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[用户]获取用户信息",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/user/info",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"info"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "[用户]获取用户信息",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/user/info",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"info"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 09 Apr 2023 12:48:26 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"code\": \"200\",\n    \"message\": \"请求成功\",\n    \"data\": {\n        \"code\": \"7c8aea9d04e70b3f3df28815f6e8a2ab\",\n        \"username\": \"admin\",\n        \"status\": \"ENABLE\",\n        \"userType\": \"USER\",\n        \"avatar\": \"avatar\",\n        \"email\": \"admin@liankebang.com\",\n        \"expireDate\": \"2023-04-09T20:22:53.111\",\n        \"dailyLimit\": 2,\n        \"usedQuota\": 0,\n        \"freeUsedQuota\": null,\n        \"totalQuota\": 0,\n        \"freeUser\": true,\n        \"expired\": true\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "[兑换码]类型",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/api/promotion/types",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"promotion",
+						"types"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "[兑换码]类型",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/api/promotion/types",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"promotion",
+								"types"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 08 Apr 2023 10:41:16 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"code\": \"200\",\n    \"message\": \"请求成功\",\n    \"data\": [\n        {\n            \"type\": \"EXPERIENCE_X\",\n            \"description\": \"次数体验版\",\n            \"dailyUsageLimit\": 100,\n            \"effectiveDays\": 31,\n            \"totalCapacity\": 100,\n            \"price\": 899,\n            \"paymentMethod\": \"redeem\",\n            \"paymentValue\": \"https://opaigc.com\"\n        },\n        {\n            \"type\": \"EXPERIENCE_S\",\n            \"description\": \"次数体验版\",\n            \"dailyUsageLimit\": 600,\n            \"effectiveDays\": 31,\n            \"totalCapacity\": 600,\n            \"price\": 2999,\n            \"paymentMethod\": \"redeem\",\n            \"paymentValue\": \"https://opaigc.com\"\n        },\n        {\n            \"type\": \"MONTH_PACKAGE_X\",\n            \"description\": \"月度体验版\",\n            \"dailyUsageLimit\": 100,\n            \"effectiveDays\": 31,\n            \"totalCapacity\": 3500,\n            \"price\": 1999,\n            \"paymentMethod\": \"redeem\",\n            \"paymentValue\": \"https://opaigc.com\"\n        },\n        {\n            \"type\": \"MONTH_PACKAGE_S\",\n            \"description\": \"月度基础版\",\n            \"dailyUsageLimit\": 200,\n            \"effectiveDays\": 31,\n            \"totalCapacity\": 10000,\n            \"price\": 4999,\n            \"paymentMethod\": \"redeem\",\n            \"paymentValue\": \"https://opaigc.com\"\n        },\n        {\n            \"type\": \"MONTH_PACKAGE_L\",\n            \"description\": \"月度进阶版\",\n            \"dailyUsageLimit\": 600,\n            \"effectiveDays\": 31,\n            \"totalCapacity\": 20000,\n            \"price\": 9999,\n            \"paymentMethod\": \"redeem\",\n            \"paymentValue\": \"https://opaigc.com\"\n        },\n        {\n            \"type\": \"MONTH_PACKAGE_B\",\n            \"description\": \"月度专业版\",\n            \"dailyUsageLimit\": 2000,\n            \"effectiveDays\": 31,\n            \"totalCapacity\": 50000,\n            \"price\": 14999,\n            \"paymentMethod\": \"redeem\",\n            \"paymentValue\": \"https://opaigc.com\"\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "[兑换码]兑换码检查",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"code\": \"EEQH2CU89Z\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/promotion/check",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"promotion",
+						"check"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "[兑换码]兑换码检查",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"EEQH2CU89Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/promotion/check",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"promotion",
+								"check"
+							]
+						}
+					},
+					"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+					"code": 422,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 08 Apr 2023 10:41:22 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 422,\n    \"code\": \"300001\",\n    \"message\": \"兑换码未找到\",\n    \"data\": {}\n}"
+				}
+			]
+		},
+		{
+			"name": "[兑换码]兑换码兑换",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"code\": \"EKNMUQ6A2G\",\n    \"userCode\": \"7c8aea9d04e70b3f3df28815f6e8a2aa\",\n    \"channel\": \"web\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/promotion/charge",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"promotion",
+						"charge"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "[兑换码]兑换码兑换",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"EHQWE3ADJ4\",\n    \"channel\": \"web\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/promotion/charge",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"promotion",
+								"charge"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 09 Apr 2023 14:27:02 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"code\": \"200\",\n    \"message\": \"请求成功\",\n    \"data\": {\n        \"code\": \"EHQWE3ADJ4\",\n        \"name\": \"次数体验版\",\n        \"type\": \"EXPERIENCE_X\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "[消息]获取AI消息",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.request.headers.add(\"Cache-Control\", \"no-cache\");",
+							"pm.request.headers.add(\"Connection\", \"keep-alive\");",
+							"",
+							"pm.sendRequest({",
+							"    url: pm.request.url.toString(),",
+							"    method: pm.request.method,",
+							"    header: {",
+							"        'Accept': 'text/event-stream'",
+							"    },",
+							"    timeout: 0",
+							"}, function (err, res) {",
+							"    console.log(res.text());",
+							"});",
+							"",
+							"console.log(pm.globals.get('token'));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "text/event-stream",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json;charset=UTF-8",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"messages\": [\n        {\n            \"role\": \"user\",\n            \"content\": \"你是谁？\"\n        }\n    ],\n    \"token\": \"{{token}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/chat/stream",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"chat",
+						"stream"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "[消息]获取AI消息",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "text/event-stream",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json;charset=UTF-8",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"messages\": [\n        {\n            \"role\": \"user\",\n            \"content\": \"你是谁？\"\n        }\n    ],\n    \"token\": \"{{token}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/chat/stream",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"chat",
+								"stream"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "plain",
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "Content-Type",
+							"value": "text/event-stream"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 09 Apr 2023 14:27:38 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "data:{\"done\":false,\"message\":\"\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"我\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"是\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"一个\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"AI\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"语\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"言\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"模\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"型\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"，\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"我\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"能\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"够\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"与\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"人\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"类\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"进行\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"交\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"互\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"并\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"产\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"生\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"自\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"然\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"语\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"言\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"响\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"应\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"。\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":false,\"message\":\"\",\"messageType\":\"TEXT\"}\n\ndata:{\"done\":true,\"message\":\"\",\"messageType\":\"TEXT\"}\n\n"
+				}
+			]
+		},
+		{
+			"name": "[消息]获取AI消息【忽略】",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.request.headers.add(\"Cache-Control\", \"no-cache\");",
+							"pm.request.headers.add(\"Connection\", \"keep-alive\");",
+							"",
+							"pm.sendRequest({",
+							"    url: pm.request.url.toString(),",
+							"    method: pm.request.method,",
+							"    header: {",
+							"        'Accept': 'text/event-stream'",
+							"    },",
+							"    timeout: 0",
+							"}, function (err, res) {",
+							"    console.log(res.text());",
+							"});",
+							"",
+							"console.log(pm.globals.get('token'));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Accept",
+						"value": "text/event-stream;charset=UTF-8",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json;charset=UTF-8",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"messages\": [\n        {\n            \"role\": \"user\",\n            \"content\": \"给我4个字的成语\"\n        }\n    ],\n    \"token\": \"{{token}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/chat/stream",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"chat",
+						"stream"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[兑换码]兑换码列表查询【忽略，私有接口】",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/promotion/list",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"promotion",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[兑换码]批量生成兑换码【忽略，私有接口】",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"count\": 10,\n\t\"type\": \"EXPERIENCE_X\",\n\t\"useRule\": {\n\t\t\"processor\": \"frequencyUseProcessor\"\n\t},\n\t\"source\": \"manual\",\n\t\"scene\": \"WEB\",\n\t\"summary\": \"￥8.99(次数体验版) - 100 次\",\n\t\"operator\": \"jerry\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/promotion/create/batch",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"promotion",
+						"create",
+						"batch"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

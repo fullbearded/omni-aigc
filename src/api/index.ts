@@ -22,17 +22,21 @@ export function fetchChatConfig<T = any>() {
 
 export function fetchChatAPIProcess<T = any>(
   params: {
-    prompt: string
-    options?: { conversationId?: string; parentMessageId?: string }
-    signal?: GenericAbortSignal
-    onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void },
+    messages: [
+      {
+        "role": "user",
+        "content": "你在哪里？"
+      }
+    ],
+    token: 'sasas'
+  }
 ) {
   const settingStore = useSettingStore()
 
   return post<T>({
-    url: '/chat-process',
-    data: { prompt: params.prompt, options: params.options, systemMessage: settingStore.systemMessage },
-    signal: params.signal,
+    url: '/api/chat/stream',
+    data: params,
+    responseType: 'stream',
     onDownloadProgress: params.onDownloadProgress,
   })
 }
@@ -48,4 +52,12 @@ export function fetchVerify<T>(token: string) {
     url: '/verify',
     data: { token },
   })
+}
+let root = 'https://chat.opaigc.com'
+export let api = {
+  rigist: '/api/auth/registration',
+  login: '/api/auth/login',
+  getUserInfo: '/api/user/info',
+  convertCharge: '/api/promotion/charge',
+  chatStream: '/api/chat/stream',
 }

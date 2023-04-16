@@ -8,13 +8,14 @@ export function defaultState(): Chat.ChatState {
     active: uuid,
     usingContext: true,
     history: [{ uuid, title: 'New Chat', isEdit: false }],
-    chat: [{ uuid, data: [] }],
+    chat: [{ uuid, data: [] }]
+    
   }
 }
 
 export function getLocalState(): Chat.ChatState {
   const localState = ss.get(LOCAL_NAME)
-  return { ...defaultState(), ...localState }
+  return { ...defaultState(), ...localState, prompt: ''}
 }
 
 export function setLocalState(state: Chat.ChatState) {

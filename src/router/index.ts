@@ -3,6 +3,7 @@ import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { setupPageGuard } from './permission'
 import { ChatLayout } from '@/views/chat/layout'
+import { useAuthStore, useUserStore} from '@/store'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -46,15 +47,31 @@ const routes: RouteRecordRaw[] = [
   },
 ]
 
+
+
 export const router = createRouter({
   history: createWebHashHistory(),
   routes,
   scrollBehavior: () => ({ left: 0, top: 0 }),
 })
+router.beforeEach((to, form, next) => {
+  let token = localStorage.getItem('token')
+  let authStore = useAuthStore()
+  const userStore = useUserStore()
+  authStore.$patch({
+    isLogin: token ? true : false
+  })
+  if (token) {
+    userStore.getUserInfor()
+  }
 
+  next()
+})
 setupPageGuard(router)
 
 export async function setupRouter(app: App) {
   app.use(router)
   await router.isReady()
 }
+
+

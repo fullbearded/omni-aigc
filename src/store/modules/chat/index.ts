@@ -190,5 +190,8 @@ export const useChatStore = defineStore('chat-store', {
     recordState() {
       setLocalState(this.$state)
     },
+    getCurrentPrompt(prompt){
+      this.prompt = prompt
+    }
   },
 })

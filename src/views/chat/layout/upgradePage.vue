@@ -1,12 +1,20 @@
 <script setup lang='ts'>
-import { ref, watch } from 'vue'
-import { NButton, NInput, NModal, NInputGroup } from 'naive-ui'
+import { ref, watch, computed } from 'vue'
+import { NButton, NInput, NModal, NInputGroup, useMessage } from 'naive-ui'
+import { api } from '@/api/index'
+import moment from 'moment'
+import request from '@/utils/request/index'
+import { useUserStore } from '@/store'
 interface Props {
     visible: boolean
 }
 let props = defineProps<Props>()
 let emit = defineEmits(['showUpgrade'])
 let visibleSate = ref(false)
+let convertCode = ref('')
+const userStore = useUserStore()
+const userInfo = computed(() => userStore.userInfo)
+let messageAu = useMessage()
 let orderList = ref([{
     name: '￥8.99(次数体验版)',
     sigleTimes: 100,
@@ -46,36 +54,61 @@ let orderList = ref([{
 }])
 
 watch(() => props.visible, (newValue) => {
+    console.log('newValue', newValue)
     visibleSate.value = newValue
 })
-function closeMOdal(){
+function closeMOdal() {
     emit('showUpgrade')
+}
+function convert() {
+    let code = convertCode.value
+    request({
+        url: api.convertCharge,
+        data: {
+            code,
+            userCode: userInfo.code || '',
+            channel: "web"
+        }
+    }).then(res => {
+        if (res.status === 200) {
+            messageAu.success('兑换成功')
+        } else {
+            messageAu.warning(data.message)
+        }
+    }).catch(error => {
+        console.log('response', error)
+        messageAu.warning(error.response.data.message)
+
+    })
 }
 </script>
 
 <template>
-    <NModal v-model:show="visibleSate" style="width: 90%; max-width: 640px" preset="card" :onClose="closeMOdal">
+    <NModal v-model:show="visibleSate" style="width: 90%; max-width: 640px" preset="card" :onClose="closeMOdal"
+        :mask-closable="false">
         <div class="bg-white rounded dark:bg-slate-800">
             <div class="header">用户升级计划
                 <div class="close-icon"></div>
             </div>
             <div class="contain">
                 <div class="tips-box">
-                    <p>尊敬的 cxp1 您好，您今日剩余可用AI问答次数为：<span class="title-3">5</span> 次</p>
-                    <p>尊敬的 cxp1 若您还需要更多的次数以满足您的使用需求，可以选择以下合适的套餐~ 次</p>
+                    <p>尊敬的 {{ userInfo.username }} 您好，您今日剩余可用AI问答次数为：<span class="title-3">{{ (userInfo.totalQuota -
+                        userInfo.usedQuota) || 0 }}</span> 次</p>
+                    <p>尊敬的 {{ userInfo.username }} 若您还需要更多的次数以满足您的使用需求，可以选择以下合适的套餐~ 次</p>
                     <p>以下套餐若在过程中出现无结果或异常，将不会扣除您的次数，尽请放心。</p>
                 </div>
                 <div class="code-box">
                     <n-input-group>
-                        <n-input :style="{ width: '50%' }"  placeholder="请输入兑换码进行兑换"/>
-                        <n-button type="primary" ghost>
+                        <n-input :style="{ width: '50%' }" placeholder="请输入兑换码进行兑换" v-model:value="convertCode" />
+                        <n-button type="primary" ghost @click="convert">
                             兑换
                         </n-button>
                     </n-input-group>
                 </div>
                 <div class="pay-box">
                     <p class="title-1">已激活计划</p>
-                    <p>普通用户 - 2024-03-28到期 - 使用0 / 总量5</p>
+                    <p>普通用户 - {{ moment(userInfo.expireDate).format('YYYY-MM-DD') }}到期 - 使用{{ userInfo.usedQuota }} / 总量{{
+                        userInfo.totalQuota }}</p>
                     <div class="pay-box-items">
                         <div class="pay-item" v-for="(item, index) in orderList" :key="index">
                             <div class="title-2">{{ item.name }}</div>

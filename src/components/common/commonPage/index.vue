@@ -22,7 +22,7 @@
         </div>
         <div class="artic-content">
             <div class="artics">
-                <div class="artic" v-for="(item, index) in currentArtics" :key="index">
+                <div class="artic" v-for="(item, index) in currentArtics" :key="index" @click="selectedPrompt(item.prompt)">
                     <p class="title-2">{{ transformData(item.title) }}</p>
                     <p class="title-4">{{ transformData(item.community, 'topic')  }} / {{ transformData(item.category) }}</p>
                     <p class="title-4">{{ item.authorName }} · {{ transformData(item.revisionTime, 'time') }}</p>
@@ -46,8 +46,9 @@ import { ref, onMounted, watchEffect, watch} from 'vue'
 import moment from 'moment'
 import DSDATA from '@/assets/ds.json'
 import { NForm, NInput, NSelect, useMessage, NGrid, NFormItemGi, NPagination } from 'naive-ui'
-
+import { useChatStore } from '@/store';
 const subjectList = DSDATA.topics
+let chat = useChatStore()
 let activityList = ref(DSDATA.activities)
 const transformDataBasic = DSDATA.transform
 let  artics = DSDATA.prompts
@@ -111,10 +112,14 @@ watch(formValue.value, (newValue, oldValue)=>{
     getCurrentArticsPages()
 })
 function transformData(keyword, type){
+    // console.log(keyword, type)
     if(type &&  type == 'topic'){
         return subjectList.filter(item=>item.id == keyword)[0].label
     }else if(type &&  type == 'time'){
         return moment(keyword).format('YYYY-MM-DD HH:mm:ss')
+    }else if(type &&  type == 'prompt'){
+        keyword = keyword.replaceAll('[TARGETLANGUAGE]', 'In Chinese')
+        return keyword.replaceAll('"[PROMPT]"', '.')
     }
     return transformDataBasic.filter(item=>item.k.toUpperCase() == keyword.toUpperCase())[0].v
 }
@@ -127,6 +132,10 @@ function getCurrentArtics(){
 }
 function getCurrentArticsPages(){
     pageCount.value = Math.ceil(artics.length/4)
+}
+function selectedPrompt(prompt){
+    console.log(prompt)
+    chat.getCurrentPrompt(transformData(prompt, 'prompt') )
 }
 </script>
 <style scoped>

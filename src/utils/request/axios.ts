@@ -1,5 +1,6 @@
 import axios, { type AxiosResponse } from 'axios'
-import { useAuthStore } from '@/store'
+import { useMessage } from 'naive-ui'
+let messageAu = useMessage()
 
 const service = axios.create({
   baseURL: import.meta.env.VITE_GLOB_API_URL,
@@ -7,7 +8,7 @@ const service = axios.create({
 
 service.interceptors.request.use(
   (config) => {
-    const token = useAuthStore().token
+    const token = localStorage.getItem('token')
     if (token)
       config.headers.Authorization = `Bearer ${token}`
     return config
@@ -17,15 +18,18 @@ service.interceptors.request.use(
   },
 )
 
-service.interceptors.response.use(
-  (response: AxiosResponse): AxiosResponse => {
-    if (response.status === 200)
-      return response
-
-    throw new Error(response.status.toString())
+service.interceptors.response.use((response: any) => {
+    console.log('response',response.status)
+    if (response.status === 200){
+     return  response.data
+    }
+    // throw new Error(response.status.toString())
   },
   (error) => {
-    return Promise.reject(error)
+    console.log('error.response',error.response, messageAu)
+    // messageAu.warning(error.response.data.message)
+    alert(`${error.response.data.message}`)
+    return Promise.reject(error.response)
   },
 )
 
