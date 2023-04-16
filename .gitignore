@@ -30,3 +30,8 @@ coverage
 
 # Environment variables files
 /service/.env
+out
+
+include server/.gitignore
+docker-compose/docker-compose-prod.yml
+server.iml

@@ -13,44 +13,32 @@ RUN pnpm install
 
 COPY . /app
 
-RUN pnpm run build
+# RUN pnpm run build
 
 # build backend
-FROM node:lts-alpine as backend
-
-RUN npm install pnpm -g
+FROM maven:3.8.3-openjdk-17 as backend
 
 WORKDIR /app
 
-COPY /service/package.json /app
+COPY /server /app
 
-COPY /service/pnpm-lock.yaml /app
-
-RUN pnpm install
-
-COPY /service /app
-
-RUN pnpm build
+RUN mvn clean package -DskipTests=true
 
 # service
-FROM node:lts-alpine
-
-RUN npm install pnpm -g
+FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
-COPY /service/package.json /app
+COPY --from=backend /app/target/server-0.0.1-SNAPSHOT.jar /app
+# COPY --from=frontend /app/dist /app/public
 
-COPY /service/pnpm-lock.yaml /app
+# 安装 nginx
+RUN apt-get update && apt-get install -y nginx
 
-RUN pnpm install --production && rm -rf /root/.npm /root/.pnpm-store /usr/local/share/.cache /tmp/*
+COPY ./docker-compose/server.conf /etc/nginx/conf.d
+COPY ./docker-compose/nginx.conf /etc/nginx
 
-COPY /service /app
 
-COPY --from=frontend /app/dist /app/public
+EXPOSE 80
 
-COPY --from=backend /app/build /app/build
-
-EXPOSE 3002
-
-CMD ["pnpm", "run", "prod"]
+CMD service nginx start && java -jar server-0.0.1-SNAPSHOT.jar
