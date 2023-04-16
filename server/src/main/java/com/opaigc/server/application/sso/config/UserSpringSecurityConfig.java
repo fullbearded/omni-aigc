@@ -6,6 +6,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -15,7 +16,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.ExceptionTranslationFilter;
 import com.opaigc.server.application.sso.filter.JwtUserAuthenticationFilter;
 import com.opaigc.server.application.sso.filter.JwtUserAuthorizationFilter;
 import com.opaigc.server.application.sso.handler.CustomLogoutSuccessHandler;
@@ -23,7 +23,6 @@ import com.opaigc.server.infrastructure.common.Constants;
 import com.opaigc.server.infrastructure.jwt.JwtTokenProvider;
 import com.opaigc.server.infrastructure.redis.RedisUtil;
 
-import jakarta.servlet.Filter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -34,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @Import(SpringSecurityConfig.class)
 @Slf4j
+@Order(1)
 public class UserSpringSecurityConfig {
 
 	private final UserDetailsService userDetailsService;
@@ -86,9 +86,9 @@ public class UserSpringSecurityConfig {
 			)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth -> auth
+				.requestMatchers(Constants.URI_WHITELIST).permitAll()
 				.requestMatchers(HttpMethod.GET, Constants.STATIC_WHITELIST).permitAll()
 				.requestMatchers(Constants.SWAGGER_WHITELIST).anonymous()
-				.requestMatchers(Constants.URI_WHITELIST).permitAll()
 				.anyRequest().authenticated()
 			)
 			.addFilter(new JwtUserAuthenticationFilter(authenticationManager, applicationContext, Constants.USER_LOGIN_PATH, jwtTokenProvider))

@@ -61,6 +61,10 @@ public interface AppService extends IService<App> {
 		 */
 		private String description;
 		/**
+		 * APP是否允许连续会话
+		 **/
+		private Boolean chat;
+		/**
 		 * APP表单模板
 		 * e
 		 */
