@@ -55,7 +55,10 @@ public class Constants {
 		"/api/chat/stream",
 		"/api/auth/registration",
 		"/api/chat/stream/anonymous",
-		"/api/app/create/free"
+		"/api/app/create/anonymous",
+		"/api/app/check/anonymous",
+		"/api/app/list/anonymous",
+		"/api/app/page/anonymous"
 	};
 
 }

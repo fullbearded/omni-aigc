@@ -32,8 +32,6 @@ public class AppController {
 	@Autowired
 	private AppService appService;
 
-	private final IPLimiter limiter = new IPLimiter(2, 30 * 60 * 1000);
-
 	/**
 	 * 获取APP列表
 	 **/
@@ -56,19 +54,6 @@ public class AppController {
 	@PostMapping("/create")
 	public ApiResponse create(@RequestBody AppService.AppCreateParam req, @NotNull(message = "请登录后再操作") AccountSession session) {
 		req.setSession(session);
-		return ApiResponse.success(appService.create(req));
-	}
-
-	/**
-	 * APP 创建
-	 **/
-	@PostMapping("/create/free")
-	public ApiResponse anonymousCreate(@RequestBody AppService.AppCreateParam req, HttpServletRequest request) {
-		if (!limiter.isAllowed(request.getRemoteAddr())) {
-			throw new AppException(CommonResponseCode.APP_WITH_ANONYMOUS_MAX_LIMIT);
-		}
-
-		req.setSession(AccountSession.builder().username(Constants.CHAT_WITH_ANONYMOUS_USER_KEY).id(0l).build());
 		return ApiResponse.success(appService.create(req));
 	}
 }

@@ -1,18 +1,16 @@
 package com.opaigc.server.application.user.service;
 
+import org.springframework.beans.BeanUtils;
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.opaigc.server.application.user.domain.App;
 import com.opaigc.server.infrastructure.auth.AccountSession;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,11 +29,15 @@ public interface AppService extends IService<App> {
 
 	Boolean usageIncrement(Long appId, Boolean isPaid, Integer amount);
 
+	List<AppListDTO> list(AppListParam req);
+
 	List<AppListDTO> publicApps(AppListParam req);
 
 	Boolean like(AppLikeParam req);
 
 	App create(AppCreateParam req);
+
+	Page<AppListDTO> page(AppPageParam req);
 
 	@Data
 	@Builder
@@ -107,8 +109,34 @@ public interface AppService extends IService<App> {
 		 * APP推荐
 		 **/
 		private App.RecommendEnum recommend;
-
+		/**
+		 * APP名称
+		 **/
+		private String name;
+		/**
+		 * APP名称 like
+		 **/
+		private String nameLike;
+		/**
+		 * APP类型
+		 **/
+		private App.AppCategoryEnum category;
 	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	class AppPageParam extends AppListParam {
+		/**
+		 * 页码
+		 */
+		private Integer page;
+		/**
+		 * 每页数量
+		 */
+		private Integer perPage;
+	}
+
 
 	@Data
 	@Builder
@@ -130,7 +158,7 @@ public interface AppService extends IService<App> {
 		/**
 		 * APP点赞
 		 **/
-		private Integer like;
+		private Integer upvote;
 		/**
 		 * APP名称
 		 */
@@ -152,5 +180,11 @@ public interface AppService extends IService<App> {
 		 * APP状态
 		 **/
 		private App.StatusEnum status;
+
+		public static AppListDTO from(App app) {
+			AppListDTO dto = new AppListDTO();
+			BeanUtils.copyProperties(app, dto);
+			return dto;
+		}
 	}
 }

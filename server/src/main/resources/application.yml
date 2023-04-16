@@ -20,6 +20,8 @@ mybatis-plus:
     auto-mapping-behavior: full
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     use-generated-keys: true
+  pagination-interceptor:
+    limit: 100
 
 # 登录配置
 login:

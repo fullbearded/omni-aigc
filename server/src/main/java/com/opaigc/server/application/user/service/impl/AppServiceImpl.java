@@ -3,6 +3,8 @@ package com.opaigc.server.application.user.service.impl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -14,9 +16,11 @@ import com.opaigc.server.application.user.service.UserService;
 import com.opaigc.server.infrastructure.exception.AppException;
 import com.opaigc.server.infrastructure.http.CommonResponseCode;
 import com.opaigc.server.infrastructure.utils.CodeUtil;
+import com.opaigc.server.infrastructure.utils.PageUtil;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -38,6 +42,8 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
 
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private AppMapper appMapper;
 
 	@Override
 	public App getByCode(String appCode) {
@@ -59,18 +65,33 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
 	}
 
 	@Override
-	public List<AppListDTO> publicApps(AppListParam req) {
+	public List<AppListDTO> list(AppListParam req) {
 		List<App> apps = lambdaQuery().eq(App::getStatus, App.StatusEnum.ENABLED).isNull(App::getDeletedAt)
-			.eq(App::getCategory, App.AppCategoryEnum.PUBLIC).orderByDesc(App::getUpvote)
+			.orderByDesc(App::getUpvote)
 			.eq(Objects.nonNull(req.getRecommend()), App::getRecommend, req.getRecommend())
 			.eq(Objects.nonNull(req.getCode()), App::getCode, req.getCode())
+			.eq(Objects.nonNull(req.getName()), App::getName, req.getName())
 			.list();
+		return converts(apps);
+	}
 
+	private List<AppListDTO> converts(List<App> apps) {
 		return apps.stream().map(app -> {
 			AppListDTO dto = new AppListDTO();
 			BeanUtils.copyProperties(app, dto);
 			return dto;
 		}).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<AppListDTO> publicApps(AppListParam req) {
+		List<App> apps = lambdaQuery().eq(App::getStatus, App.StatusEnum.ENABLED).isNull(App::getDeletedAt)
+			.eq(App::getCategory, App.AppCategoryEnum.PUBLIC).orderByDesc(App::getUpvote)
+			.eq(Objects.nonNull(req.getRecommend()), App::getRecommend, req.getRecommend())
+			.eq(Objects.nonNull(req.getCode()), App::getCode, req.getCode())
+			.like(Objects.nonNull(req.getName()), App::getName, req.getName())
+			.list();
+		return converts(apps);
 	}
 
 	@Override
@@ -104,5 +125,23 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
 			.build();
 		save(app);
 		return app;
+	}
+
+	@Override
+	public Page<AppListDTO> page(AppPageParam req) {
+		PageUtil pageUtil = new PageUtil(req.getPage(), req.getPerPage());
+		Page<App> page = new Page<>(pageUtil.getPage(), pageUtil.getPerPage());
+		QueryWrapper<App> queryWrapper = new QueryWrapper<>();
+		queryWrapper.eq(Objects.nonNull(req.getRecommend()), "recommend", req.getRecommend());
+		queryWrapper.eq(Objects.nonNull(req.getCode()), "code", req.getCode());
+		queryWrapper.like(Objects.nonNull(req.getNameLike()), "name", req.getNameLike());
+		queryWrapper.eq(Objects.nonNull(req.getName()), "name", req.getName());
+		queryWrapper.eq(Objects.nonNull(req.getCategory()), "category", req.getCategory());
+		queryWrapper.orderByDesc("upvote");
+		Page<App> appPage = appMapper.selectPage(page, queryWrapper);
+		List<AppListDTO> appDTOList = appPage.getRecords().stream().map(AppListDTO::from).collect(Collectors.toList());
+		Page<AppListDTO> appDTOPage = new Page<>(appPage.getCurrent(), appPage.getSize(), appPage.getTotal());
+		appDTOPage.setRecords(appDTOList);
+		return appDTOPage;
 	}
 }
