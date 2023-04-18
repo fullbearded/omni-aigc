@@ -57,6 +57,14 @@ public class AnonymousController {
 	}
 
 	/**
+	 * APP 点餐
+	 **/
+	@PostMapping("/app/like/anonymous")
+	public ApiResponse like(@RequestBody AppService.AppLikeParam req) {
+		return ApiResponse.success(appService.like(req));
+	}
+
+	/**
 	 * 检查App是否存在
 	 **/
 	@PostMapping("/app/check/anonymous")

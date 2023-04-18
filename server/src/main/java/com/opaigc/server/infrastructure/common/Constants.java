@@ -58,7 +58,8 @@ public class Constants {
 		"/api/app/create/anonymous",
 		"/api/app/check/anonymous",
 		"/api/app/list/anonymous",
-		"/api/app/page/anonymous"
+		"/api/app/page/anonymous",
+		"/api/app/like/anonymous"
 	};
 
 }
