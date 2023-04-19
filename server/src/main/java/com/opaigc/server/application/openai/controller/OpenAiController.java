@@ -9,10 +9,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.opaigc.server.application.openai.domain.chat.MessageType;
 import com.opaigc.server.application.openai.service.OpenAiService;
+import com.opaigc.server.application.user.domain.App;
 import com.opaigc.server.application.user.domain.UserChat;
+import com.opaigc.server.application.user.service.AppService;
 import com.opaigc.server.application.user.service.UserChatService;
 import com.opaigc.server.application.user.service.UserService;
 import com.opaigc.server.infrastructure.common.Constants;
@@ -65,6 +68,50 @@ public class OpenAiController {
 
 	private final IPLimiter limiter = new IPLimiter(3, 15 * 60 * 1000);
 
+	@Autowired
+	private AppService appService;
+
+	/**
+	 * Chat 流式返回
+	 */
+	@PostMapping(value = "/v2/chat/stream/anonymous", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	@CrossOrigin(origins = "*")
+	public Flux<String> streamCompletionsV2Anonymous(@RequestBody OpenAiService.CompletionsV2AnonymousRequest req,
+																									 HttpServletRequest request) {
+		if (!limiter.isAllowed(request.getRemoteAddr())) {
+			throw new AppException(CommonResponseCode.REMOTE_IP_MAX_LIMIT);
+		}
+		App app = appService.getByCode(req.getCode());
+		if (Objects.isNull(app)) {
+			throw new AppException(CommonResponseCode.APP_NOT_FOUND);
+		}
+
+		OpenAiService.ChatParameters parameters = OpenAiService.ChatParameters.builder().chatType(UserChat.ChatCategoryEnum.FREE)
+			.messages(buildMessages(app.getRoles(), req.getMessages())).remoteIp(request.getRemoteAddr()).type(MessageType.TEXT)
+			.sessionId(Constants.CHAT_WITH_ANONYMOUS_USER_KEY).build();
+		return openAiService.chatSend(parameters);
+	}
+
+	private List<OpenAiService.Message> buildMessages(JSONArray roles, JSONObject messages) {
+		List<OpenAiService.Message> result = new ArrayList<>();
+		for (int i = 0; i < roles.size(); i++) {
+			JSONObject role = roles.getJSONObject(i);
+			String template = role.getString("template");
+
+			for (String key : messages.keySet()) {
+				String value = messages.getString(key);
+				template = template.replace("${" + key + "}", value);
+			}
+
+			OpenAiService.Message message = new OpenAiService.Message();
+			message.setRole(role.getString("type"));
+			message.setContent(template);
+			result.add(message);
+		}
+
+		return result;
+	}
+
 	/**
 	 * Chat 流式返回
 	 */
@@ -94,8 +141,9 @@ public class OpenAiController {
 		}
 		UserChat.ChatCategoryEnum chatType = validateUserAndGetChatType(userCode);
 
-		OpenAiService.ChatParameters parameters = OpenAiService.ChatParameters.builder().chatType(chatType)
-			.messages(req.getMessages()).remoteIp(request.getRemoteAddr()).type(MessageType.TEXT).sessionId(userCode).build();
+		OpenAiService.ChatParameters parameters =
+			OpenAiService.ChatParameters.builder().chatType(chatType).messages(req.getMessages()).remoteIp(request.getRemoteAddr())
+				.type(MessageType.TEXT).sessionId(userCode).build();
 		return openAiService.chatSend(parameters);
 	}
 

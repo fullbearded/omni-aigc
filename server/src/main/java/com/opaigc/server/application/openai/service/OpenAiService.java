@@ -1,5 +1,6 @@
 package com.opaigc.server.application.openai.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.opaigc.server.application.openai.domain.chat.MessageType;
 import com.opaigc.server.application.openai.listener.CompletedCallBack;
@@ -54,6 +55,18 @@ public interface OpenAiService extends CompletedCallBack {
 	class CompletionsAnonymousRequest {
 		@NotEmpty(message = "messages is required")
 		private List<Message> messages;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Builder
+	class CompletionsV2AnonymousRequest {
+		@NotEmpty(message = "messages is required")
+		private JSONObject messages;
+
+		@NotBlank(message = "Code is required")
+		private String code;
 	}
 
 	@Data
