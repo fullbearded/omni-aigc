@@ -66,7 +66,7 @@ public class OpenAiController {
 	@Autowired
 	private UserChatService userChatService;
 
-	private final IPLimiter limiter = new IPLimiter(3, 15 * 60 * 1000);
+	private final IPLimiter limiter = new IPLimiter(20, 30 * 60 * 1000);
 
 	@Autowired
 	private AppService appService;
