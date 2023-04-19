@@ -1,9 +1,10 @@
 <script setup lang='ts'>
-import type { Ref } from 'vue'
+import { reactive, Ref } from 'vue'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { NAutoComplete, NButton, NInput, useDialog, useMessage } from 'naive-ui'
+import { NAutoComplete, NButton, NInput, useDialog, useMessage, NForm, NGrid, NFormItemGi, NSelect } from 'naive-ui'
+// import { NForm, NInput, NSelect, useMessage, NGrid, NFormItemGi, NPagination } from 'naive-ui'
 import html2canvas from 'html2canvas'
 import { Message } from './components'
 import { useScroll } from './hooks/useScroll'
@@ -16,6 +17,7 @@ import commonPage from '@/components/common/commonPage/index.vue'
 import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { useChatStore, usePromptStore } from '@/store'
+import { transformData } from '@/utils/functions'
 import { fetchChatAPIProcess } from '@/api'
 import { t } from '@/locales'
 
@@ -44,8 +46,121 @@ const currentPrompt = computed(() => chatStore.prompt)
 const conversationList = computed(() => dataSources.value.filter(item => (!item.inversion && !item.error)))
 
 const prompt = ref<string>('')
+const completPrompt = ref<string>('')
+const promptPlaceholder = ref<string>('')
 const loading = ref<boolean>(false)
 const inputRef = ref<Ref | null>(null)
+let precessForm = ref({
+  languge: 'In Chinese'
+})
+const langugeList = [{
+  value: 'In Chinese',
+  label: '中文'
+}, {
+  value: 'In English',
+  label: 'English'
+}]
+const toneList = [{
+  value: '权威',
+  label: '权威'
+}, {
+  value: '冷淡',
+  label: '冷淡'
+}, {
+  value: '冷漠',
+  label: '冷漠'
+}, {
+  value: '自信',
+  label: '自信'
+}, {
+  value: '愤世嫉俗',
+  label: '愤世嫉俗'
+}, {
+  value: '感染力',
+  label: '感染力'
+}, {
+  value: '共情',
+  label: '共情'
+}, {
+  value: '庄重',
+  label: '庄重'
+}, {
+  value: '友好',
+  label: '友好'
+}, {
+  value: '幽默',
+  label: '幽默'
+}, {
+  value: '随便',
+  label: '随便'
+}, {
+  value: '挖苦',
+  label: '挖苦'
+}, {
+  value: '乐观',
+  label: '乐观'
+}, {
+  value: '悲观',
+  label: '悲观'
+}, {
+  value: '有趣',
+  label: '有趣'
+}]
+const textTyleList = [{
+  value: '学术',
+  label: '学术'
+}, {
+  value: '善于分析',
+  label: '善于分析'
+}, {
+  value: '爱辩论',
+  label: '爱辩论'
+}, {
+  value: '非正式',
+  label: '非正式'
+}, {
+  value: '有创造力',
+  label: '有创造力'
+}, {
+  value: '批评',
+  label: '批评'
+}, {
+  value: '说明',
+  label: '说明'
+}, {
+  value: '禁句式',
+  label: '禁句式'
+}, {
+  value: '书信',
+  label: '书信'
+}, {
+  value: '解释',
+  label: '解释'
+}, {
+  value: '更多信息',
+  label: '更多信息'
+}, {
+  value: '富有教益',
+  label: '富有教益'
+}, {
+  value: '新闻业',
+  label: '新闻业'
+}, {
+  value: '隐喻',
+  label: '隐喻'
+}, {
+  value: '叙述',
+  label: '叙述'
+}, {
+  value: '有说服力',
+  label: '有说服力'
+}, {
+  value: '诗歌',
+  label: '诗歌'
+}, {
+  value: '讽刺',
+  label: '讽刺'
+}]
 
 // 添加PromptStore
 const promptStore = usePromptStore()
@@ -60,10 +175,152 @@ dataSources.value.forEach((item, index) => {
 })
 
 function handleSubmit() {
-  onConversation()
+  console.log(conversationList)
+  let reqList = []
+  loading.value = false
+  conversationList.value.forEach(item => {
+    reqList.push({
+      role: "user",
+      content: item.requestOptions.prompt
+    })
+    reqList.push({
+      role: "assistant",
+      content: item.text
+    })
+  }
+  )
+  console.log(reqList)
+  onConversation(reqList)
 }
 
-async function onConversation() {
+function handleReSubmit() {
+  console.log(conversationList)
+  loading.value = true
+  let reqList = []
+  conversationList.value.forEach(item => {
+    reqList.push({
+      role: "user",
+      content: item.requestOptions.prompt
+    })
+    reqList.push({
+      role: "assistant",
+      content: item.text
+    })
+  }
+  )
+  console.log(reqList)
+  try {
+    let lastText = ''
+    const fetchChatAPIOnce = () => {
+      fetchChatAPIProcess<Chat.ConversationResponse>({
+        messages: [
+          ...reqList
+        ],
+        token: localStorage.getItem('token') || '',
+        onDownloadProgress: ({ event }) => {
+          const xhr = event.target
+          const { responseText } = xhr
+          console.log('responseText', responseText)
+          if(responseText.status !== 200){
+            loading.value = false
+          }
+          // Always process the final line
+          const lastIndex = responseText.lastIndexOf('\n', responseText.length - 2)
+          let chunk = responseText
+          console.log('lastIndex', lastIndex - responseText.length, lastIndex)
+
+          if (lastIndex !== -1)
+            chunk = responseText.substring(0, lastIndex)
+          try {
+            let chunk1 = chunk.split('\n').filter(item => item)
+            let chunk2 = chunk1.map(item => JSON.parse(item.split('data:')[1]).message).join('')
+
+            const data = chunk2
+            updateChat(
+              +uuid,
+              dataSources.value.length - 1,
+              {
+                dateTime: new Date().toLocaleString(),
+                text: lastText + chunk2 ?? '',
+                inversion: false,
+                error: false,
+                loading: true,
+                conversationOptions: { conversationId: data.conversationId, parentMessageId: data.id },
+                requestOptions: { prompt: message, options: { ...options } },
+              },
+            )
+
+            if (openLongReply && data.detail.choices[0].finish_reason === 'length') {
+              options.parentMessageId = data.id
+              lastText = data.text
+              message = ''
+              return fetchChatAPIOnce()
+            }
+
+            scrollToBottomIfAtBottom()
+          }
+          catch (error) {
+            //
+          }
+        },
+      })
+    }
+
+    fetchChatAPIOnce()
+  }
+  catch (error: any) {
+    console.log(error)
+    const errorMessage = error?.message ?? t('common.wrong')
+
+    if (error.message === 'canceled') {
+      updateChatSome(
+        +uuid,
+        dataSources.value.length - 1,
+        {
+          loading: false,
+        },
+      )
+      scrollToBottomIfAtBottom()
+      return
+    }
+
+    const currentChat = getChatByUuidAndIndex(+uuid, dataSources.value.length - 1)
+
+    if (currentChat?.text && currentChat.text !== '') {
+      updateChatSome(
+        +uuid,
+        dataSources.value.length - 1,
+        {
+          text: `${currentChat.text}\n[${errorMessage}]`,
+          error: false,
+          loading: false,
+        },
+      )
+      return
+    }
+
+    updateChat(
+      +uuid,
+      dataSources.value.length - 1,
+      {
+        dateTime: new Date().toLocaleString(),
+        text: errorMessage,
+        inversion: false,
+        error: true,
+        loading: false,
+        conversationOptions: null,
+        requestOptions: { prompt: message, options: { ...options } },
+      },
+    )
+    scrollToBottomIfAtBottom()
+  }
+  finally {
+    loading.value = true
+  }
+}
+
+
+async function onConversation(reqList) {
   let message = prompt.value
 
   if (loading.value)
@@ -73,7 +330,6 @@ async function onConversation() {
     return
 
   controller = new AbortController()
-
   addChat(
     +uuid,
     {
@@ -82,7 +338,7 @@ async function onConversation() {
       inversion: true,
       error: false,
       conversationOptions: null,
-      requestOptions: { prompt: message, options: null },
+      requestOptions: { prompt: transformData(completPrompt.value, 'prompt', message), options: null },
     },
   )
   scrollToBottom()
@@ -109,33 +365,35 @@ async function onConversation() {
     },
   )
   scrollToBottom()
-
+  console.log('promptv', prompt, completPrompt, message)
   try {
     let lastText = ''
     const fetchChatAPIOnce = () => {
       fetchChatAPIProcess<Chat.ConversationResponse>({
         messages: [
+          ...reqList,
           {
             role: "user",
-            content: message
+            content: transformData(completPrompt.value, 'prompt', message, precessForm.value.languge) || message
           }
         ],
         token: localStorage.getItem('token') || '',
         onDownloadProgress: ({ event }) => {
           const xhr = event.target
           const { responseText } = xhr
-          console.log('responseText',responseText)
+          console.log('responseText', responseText)
+          loading.value = false
           // Always process the final line
           const lastIndex = responseText.lastIndexOf('\n', responseText.length - 2)
           let chunk = responseText
-          console.log('lastIndex',lastIndex - responseText.length,lastIndex)
-          
+          console.log('lastIndex', lastIndex - responseText.length, lastIndex)
+
           if (lastIndex !== -1)
-            chunk = responseText.substring(0,lastIndex)
+            chunk = responseText.substring(0, lastIndex)
           try {
-            let chunk1 = chunk.split('\n').filter(item=>item)
-            let chunk2 = chunk1.map(item=>JSON.parse(item.split('data:')[1]).message).join('')
-   
+            let chunk1 = chunk.split('\n').filter(item => item)
+            let chunk2 = chunk1.map(item => JSON.parse(item.split('data:')[1]).message).join('')
+
             const data = chunk2
             updateChat(
               +uuid,
@@ -215,7 +473,7 @@ async function onConversation() {
     scrollToBottomIfAtBottom()
   }
   finally {
-    loading.value = false
+    // loading.value = false
   }
 }
 
@@ -254,7 +512,7 @@ async function onRegenerate(index: number) {
     let lastText = ''
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
-        prompt: message,
+        prompt: transformData(completPrompt.value, 'prompt', message, precessForm.value.languge),
         options,
         signal: controller.signal,
         onDownloadProgress: ({ event }) => {
@@ -473,7 +731,8 @@ onMounted(() => {
     inputRef.value?.focus()
 })
 watch(currentPrompt, (newValue) => {
-  prompt.value = newValue
+  promptPlaceholder.value = transformData(newValue.promptHint)
+  completPrompt.value = newValue.prompt
 })
 onUnmounted(() => {
   if (loading.value)
@@ -499,19 +758,33 @@ onUnmounted(() => {
               <Message v-for="(item, index) of dataSources" :key="index" :date-time="item.dateTime" :text="item.text"
                 :inversion="item.inversion" :error="item.error" :loading="item.loading" @regenerate="onRegenerate(index)"
                 @delete="handleDelete(index)" />
-              <div class="sticky bottom-0 left-0 flex justify-center">
-                <NButton v-if="loading" type="warning" @click="handleStop">
-                  <template #icon>
-                    <SvgIcon icon="ri:stop-circle-line" />
-                  </template>
-                  Stop Responding
-                </NButton>
+              <div v-if="loading" type="warning" @click="handleStop" class="stop-but">
+                停止生成
+              </div>
+              <div v-if="!loading" type="warning" @click="handleReSubmit" class="start-but">
+                继续生成
               </div>
             </div>
           </template>
         </div>
       </div>
     </main>
+    <div class="precess">
+      <n-form inline :label-width="80" :model="precessForm">
+        <n-grid cols="10 400:12 600:24" :x-gap="12" responsive="self" :itemResponsive="true">
+          <n-form-item-gi :span="5" offset="5" label="输出语言" path="precessForm.languge">
+            <n-select v-model:value="precessForm.languge" placeholder="请选择" :options="langugeList" value-field="value" />
+          </n-form-item-gi>
+          <n-form-item-gi :span="5" label="语气" path="precessForm.tone">
+            <n-select v-model:value="precessForm.tone" placeholder="请选择" :options="toneList" value-field="value" />
+          </n-form-item-gi>
+          <n-form-item-gi :span="5" label="文字风格" path="precessForm.textTyle">
+            <n-select v-model:value="precessForm.textTyle" placeholder="请选择" :options="textTyleList"
+              value-field="value" />
+          </n-form-item-gi>
+        </n-grid>
+      </n-form>
+    </div>
     <footer :class="footerClass">
       <div class="w-full max-w-screen-xl m-auto">
         <div class="flex items-center justify-between space-x-2">
@@ -532,9 +805,10 @@ onUnmounted(() => {
           </HoverButton>
           <NAutoComplete v-model:value="prompt" :options="searchOptions" :render-label="renderOption">
             <template #default="{ handleInput, handleBlur, handleFocus }">
-              <NInput ref="inputRef" v-model:value="prompt" type="textarea" :placeholder="placeholder"
+              <NInput ref="inputRef" v-model:value="prompt" type="textarea" :placeholder="promptPlaceholder"
                 :autosize="{ minRows: 1, maxRows: isMobile ? 4 : 8 }" @input="handleInput" @focus="handleFocus"
                 @blur="handleBlur" @keypress="handleEnter" />
+
             </template>
           </NAutoComplete>
           <NButton type="primary" :disabled="buttonDisabled" @click="handleSubmit">
@@ -547,5 +821,42 @@ onUnmounted(() => {
         </div>
       </div>
     </footer>
+    <div class="blow"> 本站点基于外部API二次开发，仅供学习 AI 使用，使用前请知晓<a href="hhttp:www.baidu.com">免责申明</a></div>
   </div>
 </template>
+<style scoped>
+.blow {
+  text-align: center;
+  font-size: 12px;
+}
+
+.precess {
+
+  border-top: 1px solid #c0ccdc;
+  padding: 20px 20px 0px;
+}
+
+.stop-but {
+  width: 60px;
+  margin: 0 auto;
+  padding: 4px 6px;
+  border: 1px solid #c0ccdc;
+  width: 82px;
+  text-align: center;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.start-but{
+  width: 60px;
+  position: absolute;
+  bottom: 70px;
+  right: 10px;
+  margin: 0 auto;
+  padding: 4px 6px;
+  border: 1px solid #c0ccdc;
+  width: 82px;
+  text-align: center;
+  border-radius: 4px;
+  cursor: pointer;
+}
+</style>

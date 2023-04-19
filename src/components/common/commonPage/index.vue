@@ -1,15 +1,19 @@
 <template>
     <div class="common-page">
+        <p class="doc">
+        <div>AI交流群</div> OR <div>使用文档</div>
+        </p>
         <p class="header">AIPRM - 提示模板</p>
         <div class="select-form">
             <n-form inline :label-width="80" :model="formValue">
                 <n-grid cols="10 400:12 600:24" :x-gap="12" responsive="self" :itemResponsive="true">
-                    <n-form-item-gi :span="5"  label="主题" path="formValue.subject">
+                    <n-form-item-gi :span="5" label="主题" path="formValue.subject">
                         <n-select v-model:value="formValue.subject" placeholder="请选择" :options="subjectList"
                             value-field="id" />
                     </n-form-item-gi>
                     <n-form-item-gi :span="5" label="活动" path="formValue.activity">
-                        <n-select v-model:value="formValue.activity" placeholder="请选择" :options="activityList"  value-field="id"/>
+                        <n-select v-model:value="formValue.activity" placeholder="请选择" :options="activityList"
+                            value-field="id" />
                     </n-form-item-gi>
                     <n-form-item-gi :span="5" label="排序" path="formValue.order">
                         <n-select v-model:value="formValue.order" placeholder="请选择" :options="orderList" />
@@ -22,36 +26,37 @@
         </div>
         <div class="artic-content">
             <div class="artics">
-                <div class="artic" v-for="(item, index) in currentArtics" :key="index" @click="selectedPrompt(item.prompt)">
+                <div class="artic" v-for="(item, index) in currentArtics" :key="index" @click="selectedPrompt(item)">
                     <p class="title-2">{{ transformData(item.title) }}</p>
-                    <p class="title-4">{{ transformData(item.community, 'topic')  }} / {{ transformData(item.category) }}</p>
+                    <p class="title-4">{{ transformData(item.community, 'topic') }} / {{ transformData(item.category) }}</p>
                     <p class="title-4">{{ item.authorName }} · {{ transformData(item.revisionTime, 'time') }}</p>
-                    <p class="title-3">{{ transformData(item.teaser)  }}</p>
+                    <p class="title-3">{{ transformData(item.teaser) }}</p>
                     <p class="title-4 use-info">
-                        <span>查看 {{ item.views/1000 }} k</span>
-                        <span>使用 {{ item.usages/1000 }}  k</span>
-                        <span>评论 {{ item.votes/1000 }} k</span>
+                        <span>查看 {{ item.views / 1000 }} k</span>
+                        <span>使用 {{ item.usages / 1000 }} k</span>
+                        <span>评论 {{ item.votes / 1000 }} k</span>
                     </p>
                     <p class="title-4 copy-link">复制链接</p>
                 </div>
             </div>
             <div class="pages">
-                <n-pagination v-model:page="page" :page-count="pageCount" size="large" :on-update:page="changePage"/>
+                <n-pagination v-model:page="page" :page-count="pageCount" size="large" :on-update:page="changePage" />
             </div>
         </div>
     </div>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted, watchEffect, watch} from 'vue'
+import { ref, onMounted, watchEffect, watch } from 'vue'
 import moment from 'moment'
 import DSDATA from '@/assets/ds.json'
 import { NForm, NInput, NSelect, useMessage, NGrid, NFormItemGi, NPagination } from 'naive-ui'
 import { useChatStore } from '@/store';
 const subjectList = DSDATA.topics
+const transformDataBasic = DSDATA.transform
 let chat = useChatStore()
 let activityList = ref(DSDATA.activities)
-const transformDataBasic = DSDATA.transform
-let  artics = DSDATA.prompts
+
+let artics = DSDATA.prompts
 
 const orderList = [{
     "value": "1",
@@ -72,70 +77,69 @@ let formValue = ref({
 let currentArtics = ref([])
 let page = ref(1)
 let pageCount = ref(1)
-onMounted(()=>{
+onMounted(() => {
     getCurrentArticsPages()
-    activityList.value = activityList.value.map(item=>{
+    activityList.value = activityList.value.map(item => {
         return {
             ...item,
             label: transformData(item.label)
         }
-        
-    }) 
+
+    })
     getCurrentArtics()
 })
-watch(formValue.value, (newValue, oldValue)=>{
-    let { subject, activity, order, keyword} = newValue
-    console.log(subject, activity, order, keyword)
+watch(formValue.value, (newValue, oldValue) => {
+    let { subject, activity, order, keyword } = newValue
+    console.log('ss', subject, activity, order, keyword)
     let prompts = DSDATA.prompts
-    if(subject){
-        prompts = prompts.filter(item=>(item.community == subject))
+    if (subject) {
+        prompts = prompts.filter(item => (item.community == subject))
     }
-    if(activity){
-        prompts = prompts.filter(item=>(item.category == activity))
+    if (activity) {
+        prompts = prompts.filter(item => (item.category == activity))
     }
-    if(keyword){
-        prompts = prompts.map(item=>({
+    if (keyword) {
+        prompts = prompts.map(item => ({
             ...item,
             CNteaser: transformData(item.teaser)
         }))
-        prompts = prompts.filter(item=>(item.CNteaser.indexOf(keyword) > 0))
+        prompts = prompts.filter(item => (item.CNteaser.indexOf(keyword) > 0))
     }
-    if(order == 1){
-        prompts = prompts.sort((prev, next)=>(next.views - prev.views ))
-    }else if(order == 2){
-        prompts = prompts.sort((prev, next)=>(next.usages - prev.usages ))
-    }else{
-        prompts = prompts.sort((prev, next)=>(next.votes - prev.votes ))
+    if (order == 1) {
+        prompts = prompts.sort((prev, next) => (next.views - prev.views))
+    } else if (order == 2) {
+        prompts = prompts.sort((prev, next) => (next.usages - prev.usages))
+    } else {
+        prompts = prompts.sort((prev, next) => (next.votes - prev.votes))
     }
     artics = prompts
     changePage(1)
     getCurrentArticsPages()
 })
-function transformData(keyword, type){
-    // console.log(keyword, type)
-    if(type &&  type == 'topic'){
-        return subjectList.filter(item=>item.id == keyword)[0].label
-    }else if(type &&  type == 'time'){
+function transformData(keyword, type) {
+    if (type && type == 'topic') {
+        return subjectList.filter(item => item.id == keyword)[0].label
+    } else if (type && type == 'time') {
         return moment(keyword).format('YYYY-MM-DD HH:mm:ss')
-    }else if(type &&  type == 'prompt'){
+    } else if (type && type == 'prompt') {
         keyword = keyword.replaceAll('[TARGETLANGUAGE]', 'In Chinese')
         return keyword.replaceAll('"[PROMPT]"', '.')
     }
-    return transformDataBasic.filter(item=>item.k.toUpperCase() == keyword.toUpperCase())[0].v
+    return transformDataBasic.filter(item => item.k.toUpperCase() == keyword.toUpperCase())[0].v
 }
-function changePage(value){
+function changePage(value) {
     page.value = value
     getCurrentArtics()
 }
-function getCurrentArtics(){
-    currentArtics.value = artics.slice((page.value-1)*4, (page.value-1)*4+4)
+function getCurrentArtics() {
+    currentArtics.value = artics.slice((page.value - 1) * 4, (page.value - 1) * 4 + 4)
 }
-function getCurrentArticsPages(){
-    pageCount.value = Math.ceil(artics.length/4)
+function getCurrentArticsPages() {
+    pageCount.value = Math.ceil(artics.length / 4)
 }
-function selectedPrompt(prompt){
+function selectedPrompt(prompt) {
     console.log(prompt)
-    chat.getCurrentPrompt(transformData(prompt, 'prompt') )
+    chat.getCurrentPrompt(prompt)
 }
 </script>
 <style scoped>
@@ -144,6 +148,20 @@ function selectedPrompt(prompt){
     width: 100%;
 }
 
+.doc {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 12px;
+}
+.doc div {
+        padding: 0 6px;
+        border: 1px solid #18a058;
+        border-radius: 4px;
+        margin: 0 6px;
+        color: #18a058;
+        cursor: pointer;
+    }
 .header {
     font-size: 1.8rem;
     text-align: center;
@@ -164,6 +182,7 @@ function selectedPrompt(prompt){
 
 .artic p {
     text-align: left;
+    padding: 6px 0;
 }
 
 .title-2 {
@@ -185,9 +204,9 @@ function selectedPrompt(prompt){
 .title-4.copy-link {
     text-align: right;
 }
+
 .pages {
     padding: 15px;
     display: flex;
     justify-content: flex-end;
-}
-</style>
+}</style>
