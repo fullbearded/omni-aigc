@@ -13,7 +13,7 @@ import { useCopyCode } from './hooks/useCopyCode'
 import { useUsingContext } from './hooks/useUsingContext'
 import HeaderComponent from './components/Header/index.vue'
 import commonPage from '@/components/common/commonPage/index.vue'
-
+import axios from 'axios'
 import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { useChatStore, usePromptStore } from '@/store'
@@ -22,6 +22,8 @@ import { fetchChatAPIProcess } from '@/api'
 import { t } from '@/locales'
 
 let controller = new AbortController()
+let controller2 = new AbortController()
+
 
 const openLongReply = import.meta.env.VITE_GLOB_OPEN_LONG_REPLY === 'true'
 
@@ -50,6 +52,8 @@ const completPrompt = ref<string>('')
 const promptPlaceholder = ref<string>('')
 const loading = ref<boolean>(false)
 const inputRef = ref<Ref | null>(null)
+const CancelToken = axios.CancelToken;
+let source = CancelToken.source();
 let precessForm = ref({
   languge: 'In Chinese'
 })
@@ -196,8 +200,10 @@ function handleSubmit() {
 function handleReSubmit() {
   console.log(conversationList)
   loading.value = true
+  let message = prompt.value
   let reqList = []
   conversationList.value.forEach(item => {
+    if (!item.requestOptions.prompt && !item.text) return
     reqList.push({
       role: "user",
       content: item.requestOptions.prompt
@@ -208,7 +214,30 @@ function handleReSubmit() {
     })
   }
   )
-  console.log(reqList)
+  prompt.value = ''
+
+  let options: Chat.ConversationRequest = {}
+  const lastContext = conversationList.value[conversationList.value.length - 1]?.conversationOptions
+
+  if (lastContext && usingContext.value)
+    options = { ...lastContext }
+
+  addChat(
+    +uuid,
+    {
+      dateTime: new Date().toLocaleString(),
+      text: '',
+      loading: true,
+      inversion: false,
+      error: false,
+      conversationOptions: null,
+      requestOptions: { prompt: message, options: { ...options } },
+    },
+  )
+  scrollToBottom()
+  console.log('promptv', prompt, completPrompt, message)
+  // return 
+  source = CancelToken.source();
   try {
     let lastText = ''
     const fetchChatAPIOnce = () => {
@@ -216,14 +245,15 @@ function handleReSubmit() {
         messages: [
           ...reqList
         ],
+        cancelToken: source.token,
         token: localStorage.getItem('token') || '',
         onDownloadProgress: ({ event }) => {
           const xhr = event.target
           const { responseText } = xhr
           console.log('responseText', responseText)
-          if(responseText.status !== 200){
-            loading.value = false
-          }
+          // if (responseText.status !== 200) {
+          //   loading.value = false
+          // }
           // Always process the final line
           const lastIndex = responseText.lastIndexOf('\n', responseText.length - 2)
           let chunk = responseText
@@ -231,11 +261,15 @@ function handleReSubmit() {
 
           if (lastIndex !== -1)
             chunk = responseText.substring(0, lastIndex)
+          console.log('chunk', chunk)
           try {
             let chunk1 = chunk.split('\n').filter(item => item)
+            console.log('chunk1', chunk1)
             let chunk2 = chunk1.map(item => JSON.parse(item.split('data:')[1]).message).join('')
-
+            console.log('chunk2', chunk2, lastText)
             const data = chunk2
+            console.log('data1', uuid, lastText + chunk2)
+            options = {}
             updateChat(
               +uuid,
               dataSources.value.length - 1,
@@ -244,7 +278,7 @@ function handleReSubmit() {
                 text: lastText + chunk2 ?? '',
                 inversion: false,
                 error: false,
-                loading: true,
+                loading: false,
                 conversationOptions: { conversationId: data.conversationId, parentMessageId: data.id },
                 requestOptions: { prompt: message, options: { ...options } },
               },
@@ -329,7 +363,6 @@ async function onConversation(reqList) {
   if (!message || message.trim() === '')
     return
 
-  controller = new AbortController()
   addChat(
     +uuid,
     {
@@ -366,9 +399,24 @@ async function onConversation(reqList) {
   )
   scrollToBottom()
   console.log('promptv', prompt, completPrompt, message)
+  updateChat(
+    +uuid,
+    dataSources.value.length - 1,
+    {
+      dateTime: new Date().toLocaleString(),
+      text: '',
+      inversion: false,
+      error: false,
+      loading: true,
+      conversationOptions: null,
+      requestOptions: { prompt: message, ...options },
+    },
+  )
+  source = CancelToken.source();
   try {
     let lastText = ''
     const fetchChatAPIOnce = () => {
+
       fetchChatAPIProcess<Chat.ConversationResponse>({
         messages: [
           ...reqList,
@@ -377,12 +425,12 @@ async function onConversation(reqList) {
             content: transformData(completPrompt.value, 'prompt', message, precessForm.value.languge) || message
           }
         ],
+        cancelToken: source.token,
         token: localStorage.getItem('token') || '',
         onDownloadProgress: ({ event }) => {
           const xhr = event.target
           const { responseText } = xhr
           console.log('responseText', responseText)
-          loading.value = false
           // Always process the final line
           const lastIndex = responseText.lastIndexOf('\n', responseText.length - 2)
           let chunk = responseText
@@ -395,6 +443,7 @@ async function onConversation(reqList) {
             let chunk2 = chunk1.map(item => JSON.parse(item.split('data:')[1]).message).join('')
 
             const data = chunk2
+            console.log('data2', uuid, lastText + chunk2, 'sdsd')
             updateChat(
               +uuid,
               dataSources.value.length - 1,
@@ -481,7 +530,6 @@ async function onRegenerate(index: number) {
   if (loading.value)
     return
 
-  controller = new AbortController()
 
   const { requestOptions } = dataSources.value[index]
 
@@ -511,10 +559,11 @@ async function onRegenerate(index: number) {
   try {
     let lastText = ''
     const fetchChatAPIOnce = async () => {
+      console.log('ssssssss')
+      return
       await fetchChatAPIProcess<Chat.ConversationResponse>({
         prompt: transformData(completPrompt.value, 'prompt', message, precessForm.value.languge),
         options,
-        signal: controller.signal,
         onDownloadProgress: ({ event }) => {
           const xhr = event.target
           const { responseText } = xhr
@@ -676,7 +725,8 @@ function handleEnter(event: KeyboardEvent) {
 
 function handleStop() {
   if (loading.value) {
-    controller.abort()
+    console.log('stop', controller)
+    source.cancel()
     loading.value = false
   }
 }
@@ -685,17 +735,34 @@ function handleStop() {
 // 搜索选项计算，这里使用value作为索引项，所以当出现重复value时渲染异常(多项同时出现选中效果)
 // 理想状态下其实应该是key作为索引项,但官方的renderOption会出现问题，所以就需要value反renderLabel实现
 const searchOptions = computed(() => {
-  if (prompt.value.startsWith('/')) {
-    return promptTemplate.value.filter((item: { key: string }) => item.key.toLowerCase().includes(prompt.value.substring(1).toLowerCase())).map((obj: { value: any }) => {
-      return {
-        label: obj.value,
-        value: obj.value,
-      }
-    })
+  console.log('prompt.value', prompt.value)
+  try {
+    if (prompt.value && prompt.value.startsWith('/')) {
+      return promptTemplate.value.filter((item: { key: string }) => item.key.toLowerCase().includes(prompt.value.substring(1).toLowerCase())).map((obj: { value: any }) => {
+        return {
+          label: obj.value,
+          value: obj.value,
+        }
+      })
+    }
+    else {
+      return []
+    }
+  } catch (error) {
+    prompt.value = ''
+    if (prompt.value.startsWith('/')) {
+      return promptTemplate.value.filter((item: { key: string }) => item.key.toLowerCase().includes(prompt.value.substring(1).toLowerCase())).map((obj: { value: any }) => {
+        return {
+          label: obj.value,
+          value: obj.value,
+        }
+      })
+    }
+    else {
+      return []
+    }
   }
-  else {
-    return []
-  }
+
 })
 
 // value反渲染key
@@ -846,7 +913,8 @@ onUnmounted(() => {
   border-radius: 4px;
   cursor: pointer;
 }
-.start-but{
+
+.start-but {
   width: 60px;
   position: absolute;
   bottom: 70px;

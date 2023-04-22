@@ -64,7 +64,6 @@ router.beforeEach((to, form, next) => {
   if (token) {
     userStore.getUserInfor()
   }
-
   next()
 })
 setupPageGuard(router)

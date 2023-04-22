@@ -68,7 +68,6 @@ export function get<T = any>(
 }
 
 export function post(config){
-// debugger
  return request({
     ...config,
     method: 'post'

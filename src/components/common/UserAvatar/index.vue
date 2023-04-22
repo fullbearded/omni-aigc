@@ -27,6 +27,7 @@ function loginHander(type: any) {
     authStore.$patch({
       isLogin: false
     })
+    userStore.resetUserInfo()
   } else if(type === 'islogin'){
     visibleLogin.value = false
   }else {

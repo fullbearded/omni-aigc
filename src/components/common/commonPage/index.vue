@@ -74,6 +74,7 @@ let formValue = ref({
     order: '1',
     keyword: ''
 })
+let serch: any
 let currentArtics = ref([])
 let page = ref(1)
 let pageCount = ref(1)
@@ -90,31 +91,35 @@ onMounted(() => {
 })
 watch(formValue.value, (newValue, oldValue) => {
     let { subject, activity, order, keyword } = newValue
-    console.log('ss', subject, activity, order, keyword)
-    let prompts = DSDATA.prompts
-    if (subject) {
-        prompts = prompts.filter(item => (item.community == subject))
-    }
-    if (activity) {
-        prompts = prompts.filter(item => (item.category == activity))
-    }
-    if (keyword) {
-        prompts = prompts.map(item => ({
-            ...item,
-            CNteaser: transformData(item.teaser)
-        }))
-        prompts = prompts.filter(item => (item.CNteaser.indexOf(keyword) > 0))
-    }
-    if (order == 1) {
-        prompts = prompts.sort((prev, next) => (next.views - prev.views))
-    } else if (order == 2) {
-        prompts = prompts.sort((prev, next) => (next.usages - prev.usages))
-    } else {
-        prompts = prompts.sort((prev, next) => (next.votes - prev.votes))
-    }
-    artics = prompts
-    changePage(1)
-    getCurrentArticsPages()
+    serch && clearTimeout(serch)
+    serch = setTimeout(() => {
+        console.log('sssdasd')
+    
+        let prompts = DSDATA.prompts
+        if (subject) {
+            prompts = prompts.filter(item => (item.community == subject))
+        }
+        if (activity) {
+            prompts = prompts.filter(item => (item.category == activity))
+        }
+        if (keyword) {
+            prompts = prompts.map(item => ({
+                ...item,
+                CNteaser: transformData(item.teaser)
+            }))
+            prompts = prompts.filter(item => (item.CNteaser.indexOf(keyword) > 0))
+        }
+        if (order == 1) {
+            prompts = prompts.sort((prev, next) => (next.views - prev.views))
+        } else if (order == 2) {
+            prompts = prompts.sort((prev, next) => (next.usages - prev.usages))
+        } else {
+            prompts = prompts.sort((prev, next) => (next.votes - prev.votes))
+        }
+        artics = prompts
+        changePage(1)
+        getCurrentArticsPages()
+    }, 500)
 })
 function transformData(keyword, type) {
     if (type && type == 'topic') {
@@ -154,14 +159,16 @@ function selectedPrompt(prompt) {
     justify-content: center;
     padding-bottom: 12px;
 }
+
 .doc div {
-        padding: 0 6px;
-        border: 1px solid #18a058;
-        border-radius: 4px;
-        margin: 0 6px;
-        color: #18a058;
-        cursor: pointer;
-    }
+    padding: 0 6px;
+    border: 1px solid #18a058;
+    border-radius: 4px;
+    margin: 0 6px;
+    color: #18a058;
+    cursor: pointer;
+}
+
 .header {
     font-size: 1.8rem;
     text-align: center;
@@ -179,7 +186,9 @@ function selectedPrompt(prompt) {
     padding: 1.5rem;
     cursor: pointer;
 }
-
+.artic:hover {
+    box-shadow: 1px 1px 20px #c0ccdc;
+}
 .artic p {
     text-align: left;
     padding: 6px 0;

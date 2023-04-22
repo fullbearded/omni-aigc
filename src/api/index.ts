@@ -37,6 +37,7 @@ export function fetchChatAPIProcess<T = any>(
     url: '/api/chat/stream',
     data: params,
     responseType: 'stream',
+    cancelToken: params.cancelToken,
     onDownloadProgress: params.onDownloadProgress,
   })
 }

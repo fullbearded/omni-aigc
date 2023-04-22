@@ -28,7 +28,10 @@ service.interceptors.response.use((response: any) => {
   (error) => {
     console.log('error.response',error.response, messageAu)
     // messageAu.warning(error.response.data.message)
-    alert(`${error.response.data.message}`)
+    if(error.response && error.response.data){
+      alert(`${error.response.data.message}`)
+    }
+   
     return Promise.reject(error.response)
   },
 )
