@@ -24,6 +24,7 @@ export const useUserStore = defineStore('user-store', {
         
       })
     },
+    
     resetUserInfo() {
       this.userInfo = { ...defaultSetting().userInfo }
       this.recordState()

@@ -1,11 +1,12 @@
 <script setup lang='ts'>
-import { reactive, Ref } from 'vue'
+import type { Ref } from 'vue'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { NAutoComplete, NButton, NInput, useDialog, useMessage, NForm, NGrid, NFormItemGi, NSelect } from 'naive-ui'
+import { NAutoComplete, NButton, NForm, NFormItemGi, NGrid, NInput, NSelect, useDialog, useMessage } from 'naive-ui'
 // import { NForm, NInput, NSelect, useMessage, NGrid, NFormItemGi, NPagination } from 'naive-ui'
 import html2canvas from 'html2canvas'
+import axios from 'axios'
 import { Message } from './components'
 import { useScroll } from './hooks/useScroll'
 import { useChat } from './hooks/useChat'
@@ -13,7 +14,6 @@ import { useCopyCode } from './hooks/useCopyCode'
 import { useUsingContext } from './hooks/useUsingContext'
 import HeaderComponent from './components/Header/index.vue'
 import commonPage from '@/components/common/commonPage/index.vue'
-import axios from 'axios'
 import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { useChatStore, usePromptStore } from '@/store'
@@ -21,9 +21,8 @@ import { transformData } from '@/utils/functions'
 import { fetchChatAPIProcess } from '@/api'
 import { t } from '@/locales'
 
-let controller = new AbortController()
-let controller2 = new AbortController()
-
+const controller = new AbortController()
+const controller2 = new AbortController()
 
 const openLongReply = import.meta.env.VITE_GLOB_OPEN_LONG_REPLY === 'true'
 
@@ -52,118 +51,118 @@ const completPrompt = ref<string>('')
 const promptPlaceholder = ref<string>('')
 const loading = ref<boolean>(false)
 const inputRef = ref<Ref | null>(null)
-const CancelToken = axios.CancelToken;
-let source = CancelToken.source();
-let precessForm = ref({
-  languge: 'In Chinese'
+const CancelToken = axios.CancelToken
+let source = CancelToken.source()
+const precessForm = ref({
+  languge: 'In Chinese',
 })
 const langugeList = [{
   value: 'In Chinese',
-  label: '中文'
+  label: '中文',
 }, {
   value: 'In English',
-  label: 'English'
+  label: 'English',
 }]
 const toneList = [{
   value: '权威',
-  label: '权威'
+  label: '权威',
 }, {
   value: '冷淡',
-  label: '冷淡'
+  label: '冷淡',
 }, {
   value: '冷漠',
-  label: '冷漠'
+  label: '冷漠',
 }, {
   value: '自信',
-  label: '自信'
+  label: '自信',
 }, {
   value: '愤世嫉俗',
-  label: '愤世嫉俗'
+  label: '愤世嫉俗',
 }, {
   value: '感染力',
-  label: '感染力'
+  label: '感染力',
 }, {
   value: '共情',
-  label: '共情'
+  label: '共情',
 }, {
   value: '庄重',
-  label: '庄重'
+  label: '庄重',
 }, {
   value: '友好',
-  label: '友好'
+  label: '友好',
 }, {
   value: '幽默',
-  label: '幽默'
+  label: '幽默',
 }, {
   value: '随便',
-  label: '随便'
+  label: '随便',
 }, {
   value: '挖苦',
-  label: '挖苦'
+  label: '挖苦',
 }, {
   value: '乐观',
-  label: '乐观'
+  label: '乐观',
 }, {
   value: '悲观',
-  label: '悲观'
+  label: '悲观',
 }, {
   value: '有趣',
-  label: '有趣'
+  label: '有趣',
 }]
 const textTyleList = [{
   value: '学术',
-  label: '学术'
+  label: '学术',
 }, {
   value: '善于分析',
-  label: '善于分析'
+  label: '善于分析',
 }, {
   value: '爱辩论',
-  label: '爱辩论'
+  label: '爱辩论',
 }, {
   value: '非正式',
-  label: '非正式'
+  label: '非正式',
 }, {
   value: '有创造力',
-  label: '有创造力'
+  label: '有创造力',
 }, {
   value: '批评',
-  label: '批评'
+  label: '批评',
 }, {
   value: '说明',
-  label: '说明'
+  label: '说明',
 }, {
   value: '禁句式',
-  label: '禁句式'
+  label: '禁句式',
 }, {
   value: '书信',
-  label: '书信'
+  label: '书信',
 }, {
   value: '解释',
-  label: '解释'
+  label: '解释',
 }, {
   value: '更多信息',
-  label: '更多信息'
+  label: '更多信息',
 }, {
   value: '富有教益',
-  label: '富有教益'
+  label: '富有教益',
 }, {
   value: '新闻业',
-  label: '新闻业'
+  label: '新闻业',
 }, {
   value: '隐喻',
-  label: '隐喻'
+  label: '隐喻',
 }, {
   value: '叙述',
-  label: '叙述'
+  label: '叙述',
 }, {
   value: '有说服力',
-  label: '有说服力'
+  label: '有说服力',
 }, {
   value: '诗歌',
-  label: '诗歌'
+  label: '诗歌',
 }, {
   value: '讽刺',
-  label: '讽刺'
+  label: '讽刺',
 }]
 
 // 添加PromptStore
@@ -180,18 +179,18 @@ dataSources.value.forEach((item, index) => {
 
 function handleSubmit() {
   console.log(conversationList)
-  let reqList = []
+  const reqList = []
   loading.value = false
-  conversationList.value.forEach(item => {
+  conversationList.value.forEach((item) => {
     reqList.push({
-      role: "user",
-      content: item.requestOptions.prompt
+      role: 'user',
+      content: item.requestOptions.prompt,
     })
     reqList.push({
-      role: "assistant",
-      content: item.text
+      role: 'assistant',
+      content: item.text,
     })
-  }
+  },
   )
   console.log(reqList)
   onConversation(reqList)
@@ -201,18 +200,19 @@ function handleReSubmit() {
   console.log(conversationList)
   loading.value = true
   let message = prompt.value
-  let reqList = []
-  conversationList.value.forEach(item => {
-    if (!item.requestOptions.prompt && !item.text) return
+  const reqList = []
+  conversationList.value.forEach((item) => {
+    if (!item.requestOptions.prompt && !item.text)
+      return
     reqList.push({
-      role: "user",
-      content: item.requestOptions.prompt
+      role: 'user',
+      content: item.requestOptions.prompt,
     })
     reqList.push({
-      role: "assistant",
-      content: item.text
+      role: 'assistant',
+      content: item.text,
     })
-  }
+  },
   )
   prompt.value = ''
 
@@ -236,14 +236,14 @@ function handleReSubmit() {
   )
   scrollToBottom()
   console.log('promptv', prompt, completPrompt, message)
-  // return 
-  source = CancelToken.source();
+  // return
+  source = CancelToken.source()
   try {
     let lastText = ''
     const fetchChatAPIOnce = () => {
       fetchChatAPIProcess<Chat.ConversationResponse>({
         messages: [
-          ...reqList
+          ...reqList,
         ],
         cancelToken: source.token,
         token: localStorage.getItem('token') || '',
@@ -258,14 +258,25 @@ function handleReSubmit() {
           const lastIndex = responseText.lastIndexOf('\n', responseText.length - 2)
           let chunk = responseText
           console.log('lastIndex', lastIndex - responseText.length, lastIndex)
-
+          if (lastIndex === -1) {
+            updateChatSome(
+              +uuid,
+              dataSources.value.length - 1,
+              {
+                text: '',
+                error: false,
+                loading: false,
+              },
+            )
+            return loading.value = false
+          }
           if (lastIndex !== -1)
             chunk = responseText.substring(0, lastIndex)
           console.log('chunk', chunk)
           try {
-            let chunk1 = chunk.split('\n').filter(item => item)
+            const chunk1 = chunk.split('\n').filter(item => item)
             console.log('chunk1', chunk1)
-            let chunk2 = chunk1.map(item => JSON.parse(item.split('data:')[1]).message).join('')
+            const chunk2 = chunk1.map(item => JSON.parse(item.split('data:')[1]).message).join('')
             console.log('chunk2', chunk2, lastText)
             const data = chunk2
             console.log('data1', uuid, lastText + chunk2)
@@ -303,7 +314,8 @@ function handleReSubmit() {
     fetchChatAPIOnce()
   }
   catch (error: any) {
-    console.log(error)
+    console.log('sss', error)
+    loading.value = false
     const errorMessage = error?.message ?? t('common.wrong')
 
     if (error.message === 'canceled') {
@@ -353,7 +365,6 @@ function handleReSubmit() {
   }
 }
 
-
 async function onConversation(reqList) {
   let message = prompt.value
 
@@ -398,7 +409,6 @@ async function onConversation(reqList) {
     },
   )
   scrollToBottom()
-  console.log('promptv', prompt, completPrompt, message)
   updateChat(
     +uuid,
     dataSources.value.length - 1,
@@ -412,18 +422,17 @@ async function onConversation(reqList) {
       requestOptions: { prompt: message, ...options },
     },
   )
-  source = CancelToken.source();
+  source = CancelToken.source()
   try {
     let lastText = ''
     const fetchChatAPIOnce = () => {
-
       fetchChatAPIProcess<Chat.ConversationResponse>({
         messages: [
           ...reqList,
           {
-            role: "user",
-            content: transformData(completPrompt.value, 'prompt', message, precessForm.value.languge) || message
-          }
+            role: 'user',
+            content: transformData(completPrompt.value, 'prompt', message, precessForm.value.languge) || message,
+          },
         ],
         cancelToken: source.token,
         token: localStorage.getItem('token') || '',
@@ -435,12 +444,24 @@ async function onConversation(reqList) {
           const lastIndex = responseText.lastIndexOf('\n', responseText.length - 2)
           let chunk = responseText
           console.log('lastIndex', lastIndex - responseText.length, lastIndex)
+          if (lastIndex === -1) {
+            updateChatSome(
+              +uuid,
+              dataSources.value.length - 1,
+              {
+                text: '',
+                error: false,
+                loading: false,
+              },
+            )
+            return loading.value = false
+          }
 
           if (lastIndex !== -1)
             chunk = responseText.substring(0, lastIndex)
           try {
-            let chunk1 = chunk.split('\n').filter(item => item)
-            let chunk2 = chunk1.map(item => JSON.parse(item.split('data:')[1]).message).join('')
+            const chunk1 = chunk.split('\n').filter(item => item)
+            const chunk2 = chunk1.map(item => JSON.parse(item.split('data:')[1]).message).join('')
 
             const data = chunk2
             console.log('data2', uuid, lastText + chunk2, 'sdsd')
@@ -478,7 +499,7 @@ async function onConversation(reqList) {
   }
   catch (error: any) {
     const errorMessage = error?.message ?? t('common.wrong')
-
+    loading.value = false
     if (error.message === 'canceled') {
       updateChatSome(
         +uuid,
@@ -529,7 +550,6 @@ async function onConversation(reqList) {
 async function onRegenerate(index: number) {
   if (loading.value)
     return
-
 
   const { requestOptions } = dataSources.value[index]
 
@@ -748,7 +768,8 @@ const searchOptions = computed(() => {
     else {
       return []
     }
-  } catch (error) {
+  }
+  catch (error) {
     prompt.value = ''
     if (prompt.value.startsWith('/')) {
       return promptTemplate.value.filter((item: { key: string }) => item.key.toLowerCase().includes(prompt.value.substring(1).toLowerCase())).map((obj: { value: any }) => {
@@ -762,7 +783,6 @@ const searchOptions = computed(() => {
       return []
     }
   }
-
 })
 
 // value反渲染key
@@ -809,26 +829,32 @@ onUnmounted(() => {
 
 <template>
   <div class="flex flex-col w-full h-full">
-    <HeaderComponent v-if="isMobile" :using-context="usingContext" @export="handleExport"
-      @toggle-using-context="toggleUsingContext" />
+    <HeaderComponent
+      v-if="isMobile" :using-context="usingContext" @export="handleExport"
+      @toggle-using-context="toggleUsingContext"
+    />
     <main class="flex-1 overflow-hidden">
       <div id="scrollRef" ref="scrollRef" class="h-full overflow-hidden overflow-y-auto">
-        <div id="image-wrapper" class="w-full max-w-screen-xl m-auto dark:bg-[#101014]"
-          :class="[isMobile ? 'p-2' : 'p-4']">
+        <div
+          id="image-wrapper" class="w-full max-w-screen-xl m-auto dark:bg-[#101014]"
+          :class="[isMobile ? 'p-2' : 'p-4']"
+        >
           <template v-if="!dataSources.length">
             <div class="flex items-center justify-center mt-4 text-center text-neutral-300">
-              <commonPage></commonPage>
+              <commonPage />
             </div>
           </template>
           <template v-else>
             <div>
-              <Message v-for="(item, index) of dataSources" :key="index" :date-time="item.dateTime" :text="item.text"
+              <Message
+                v-for="(item, index) of dataSources" :key="index" :date-time="item.dateTime" :text="item.text"
                 :inversion="item.inversion" :error="item.error" :loading="item.loading" @regenerate="onRegenerate(index)"
-                @delete="handleDelete(index)" />
-              <div v-if="loading" type="warning" @click="handleStop" class="stop-but">
+                @delete="handleDelete(index)"
+              />
+              <div v-if="loading" type="warning" class="stop-but" @click="handleStop">
                 停止生成
               </div>
-              <div v-if="!loading" type="warning" @click="handleReSubmit" class="start-but">
+              <div v-if="!loading" type="warning" class="start-but" @click="handleReSubmit">
                 继续生成
               </div>
             </div>
@@ -837,20 +863,19 @@ onUnmounted(() => {
       </div>
     </main>
     <div class="precess">
-      <n-form inline :label-width="80" :model="precessForm">
-        <n-grid cols="10 400:12 600:24" :x-gap="12" responsive="self" :itemResponsive="true">
-          <n-form-item-gi :span="5" offset="5" label="输出语言" path="precessForm.languge">
-            <n-select v-model:value="precessForm.languge" placeholder="请选择" :options="langugeList" value-field="value" />
-          </n-form-item-gi>
-          <n-form-item-gi :span="5" label="语气" path="precessForm.tone">
-            <n-select v-model:value="precessForm.tone" placeholder="请选择" :options="toneList" value-field="value" />
-          </n-form-item-gi>
-          <n-form-item-gi :span="5" label="文字风格" path="precessForm.textTyle">
-            <n-select v-model:value="precessForm.textTyle" placeholder="请选择" :options="textTyleList"
-              value-field="value" />
-          </n-form-item-gi>
-        </n-grid>
-      </n-form>
+      <NForm inline :label-width="80" :model="precessForm">
+        <NGrid cols="10 400:12 600:24" :x-gap="12" responsive="self" :item-responsive="true">
+          <NFormItemGi :span="5" offset="5" label="输出语言" path="precessForm.languge">
+            <NSelect v-model:value="precessForm.languge" placeholder="请选择" :options="langugeList" value-field="value" />
+          </NFormItemGi>
+          <NFormItemGi :span="5" label="语气" path="precessForm.tone">
+            <NSelect v-model:value="precessForm.tone" placeholder="请选择" :options="toneList" value-field="value" />
+          </NFormItemGi>
+          <NFormItemGi :span="5" label="文字风格" path="precessForm.textTyle">
+            <NSelect v-model:value="precessForm.textTyle" placeholder="请选择" :options="textTyleList" value-field="value" />
+          </NFormItemGi>
+        </NGrid>
+      </NForm>
     </div>
     <footer :class="footerClass">
       <div class="w-full max-w-screen-xl m-auto">
@@ -872,10 +897,11 @@ onUnmounted(() => {
           </HoverButton>
           <NAutoComplete v-model:value="prompt" :options="searchOptions" :render-label="renderOption">
             <template #default="{ handleInput, handleBlur, handleFocus }">
-              <NInput ref="inputRef" v-model:value="prompt" type="textarea" :placeholder="promptPlaceholder"
+              <NInput
+                ref="inputRef" v-model:value="prompt" type="textarea" :placeholder="promptPlaceholder"
                 :autosize="{ minRows: 1, maxRows: isMobile ? 4 : 8 }" @input="handleInput" @focus="handleFocus"
-                @blur="handleBlur" @keypress="handleEnter" />
-
+                @blur="handleBlur" @keypress="handleEnter"
+              />
             </template>
           </NAutoComplete>
           <NButton type="primary" :disabled="buttonDisabled" @click="handleSubmit">
@@ -888,9 +914,12 @@ onUnmounted(() => {
         </div>
       </div>
     </footer>
-    <div class="blow"> 本站点基于外部API二次开发，仅供学习 AI 使用，使用前请知晓<a href="hhttp:www.baidu.com">免责申明</a></div>
+    <div class="blow">
+      本站点基于外部API二次开发，仅供学习 AI 使用，使用前请知晓<a href="hhttp:www.baidu.com">免责申明</a>
+    </div>
   </div>
 </template>
+
 <style scoped>
 .blow {
   text-align: center;
