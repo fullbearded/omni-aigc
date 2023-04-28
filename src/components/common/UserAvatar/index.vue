@@ -1,7 +1,7 @@
 <script setup lang='ts'>
-import { computed, defineEmits, inject, ref, watch } from 'vue'
+import { computed, inject, ref, watch } from 'vue'
 import { NAvatar } from 'naive-ui'
-import { useUserStore, useAuthStore } from '@/store'
+import { useAuthStore, useUserStore } from '@/store'
 import defaultAvatar from '@/assets/avatar.jpg'
 import { isString } from '@/utils/is'
 import login from '@/components/common/login/index.vue'
@@ -10,7 +10,7 @@ import login from '@/components/common/login/index.vue'
 const showUpgrade = inject('showUpgrade', Function, true)
 const userStore = useUserStore()
 const authStore = useAuthStore()
-let visibleLogin = ref(false)
+const visibleLogin = ref(false)
 
 const userInfo = computed(() => userStore.userInfo)
 const isLogin = computed(() => authStore.isLogin)
@@ -21,16 +21,19 @@ function upgradeHandler() {
   showUpgrade()
 }
 function loginHander(type: any) {
+  console.log('type', type)
   if (type === 'logout') {
     visibleLogin.value = false
     localStorage.removeItem('token')
     authStore.$patch({
-      isLogin: false
+      isLogin: false,
     })
     userStore.resetUserInfo()
-  } else if(type === 'islogin'){
+  }
+  else if (type === 'islogin') {
     visibleLogin.value = false
-  }else {
+  }
+  else {
     visibleLogin.value = true
   }
 }
@@ -51,24 +54,24 @@ function loginHander(type: any) {
         {{ userInfo.username || '' }}
       </h2>
       <p class="overflow-hidden font-bold text-md text-ellipsis whitespace-nowrap">
-        每日剩余对话次数{{(userInfo.totalQuota - userInfo.usedQuota) || 0}}次
+        每日剩余对话次数{{ (userInfo.totalQuota - userInfo.usedQuota) || 0 }}次
       </p>
-      <p class="overflow-hidden text-s text-gray-500 text-ellipsis whitespace-nowrap">
+      <p class="overflow-hidden text-gray-500 text-s text-ellipsis whitespace-nowrap" />
       <div class="upgrade-but" @click="upgradeHandler">
         用户升级计划
       </div>
 
-      </p>
-      <h3 v-if="isLogin" class="log-out  text-gray-500" @click="() => loginHander('logout')">
+      <h3 v-if="isLogin" class="text-gray-500 log-out" @click="() => loginHander('logout')">
         退出登陆
       </h3>
-      <h3 v-else class="log-out  text-gray-500" @click="() => loginHander('loghin')">
+      <h3 v-else class="text-gray-500 log-out" @click="() => loginHander('loghin')">
         登陆账户
       </h3>
     </div>
   </div>
-  <login :visibleLogin="visibleLogin" @loginHander="loginHander"></login>
+  <login :visible-login="visibleLogin" @loginHander="loginHander" />
 </template>
+
 <style scoped>
 .upgrade-but {
   width: fit-content;
