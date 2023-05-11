@@ -195,9 +195,9 @@ function regist() {
         <NButton type="primary" :block="true" @click="login">
           登录
         </NButton>
-        <NButton type="tertiary" :block="true" @click="loginStatu = false">
-          还没有账号立即注册
-        </NButton>
+<!--        <NButton type="tertiary" :block="true" @click="loginStatu = false">-->
+<!--          还没有账号立即注册-->
+<!--        </NButton>-->
       </NSpace>
     </div>
     <div v-else>
