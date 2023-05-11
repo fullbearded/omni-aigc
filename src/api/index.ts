@@ -1,4 +1,4 @@
-import type { AxiosProgressEvent, GenericAbortSignal } from 'axios'
+import type { GenericAbortSignal } from 'axios'
 import { post } from '@/utils/request'
 import { useSettingStore } from '@/store'
 
@@ -20,17 +20,15 @@ export function fetchChatConfig<T = any>() {
   })
 }
 
-export function fetchChatAPIProcess<T = any>(
-  params: {
-    messages: [
-      {
-        "role": "user",
-        "content": "你在哪里？"
-      }
-    ],
-    token: 'sasas'
-  }
-) {
+export function fetchChatAPIProcess<T = any>(params: {
+  messages: [
+    {
+      role: 'user'
+      content: '你在哪里？'
+    },
+  ]
+  token: 'sasas'
+}) {
   const settingStore = useSettingStore()
 
   return post<T>({
@@ -54,8 +52,8 @@ export function fetchVerify<T>(token: string) {
     data: { token },
   })
 }
-let root = 'https://chat.opaigc.com'
-export let api = {
+const root = 'https://chat.opaigc.com'
+export const api = {
   rigist: '/api/auth/registration',
   login: '/api/auth/login',
   getUserInfo: '/api/user/info',

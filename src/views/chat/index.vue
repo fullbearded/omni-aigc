@@ -817,8 +817,10 @@ onMounted(() => {
   if (inputRef.value && !isMobile.value)
     inputRef.value?.focus()
 })
+const promptTitle = ref('')
 watch(currentPrompt, (newValue) => {
   promptPlaceholder.value = transformData(newValue.promptHint)
+  promptTitle.value = transformData(newValue.title)
   completPrompt.value = newValue.prompt
 })
 onUnmounted(() => {
@@ -863,9 +865,12 @@ onUnmounted(() => {
       </div>
     </main>
     <div class="precess">
+      <div class="prompt">
+        {{ promptTitle }}
+      </div>
       <NForm inline :label-width="80" :model="precessForm">
         <NGrid cols="10 400:12 600:24" :x-gap="12" responsive="self" :item-responsive="true">
-          <NFormItemGi :span="5" offset="5" label="输出语言" path="precessForm.languge">
+          <NFormItemGi :span="5" offset="5" label="输出语言" path="precessForm.languge" class="prompt-box">
             <NSelect v-model:value="precessForm.languge" placeholder="请选择" :options="langugeList" value-field="value" />
           </NFormItemGi>
           <NFormItemGi :span="5" label="语气" path="precessForm.tone">
@@ -921,6 +926,18 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.prompt-box {
+  position: relative;
+}
+.prompt{
+  width: fit-content;
+  padding: 4px 15px;
+  background: #c0ccdc;
+  border-radius: 3px;
+  margin-left: 23rem;
+  margin-bottom: 10px;
+}
+
 .blow {
   text-align: center;
   font-size: 12px;

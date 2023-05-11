@@ -36,14 +36,16 @@ export default defineConfig((env) => {
       open: false,
       proxy: {
         '/api': {
-          target: 'https://chat.opaigc.com',
+          target: 'https://api.opaigc.com/',
           changeOrigin: true, // 允许跨域
           rewrite: path => path.replace('/api/', '/'),
         },
       },
     },
+    base: './',
     build: {
       reportCompressedSize: false,
+      assetsDir: './asstes/',
       sourcemap: false,
       commonjsOptions: {
         ignoreTryCatch: false,
