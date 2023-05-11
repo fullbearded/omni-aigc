@@ -13,7 +13,7 @@ RUN pnpm install
 
 COPY . /app
 
-# RUN pnpm run build
+RUN pnpm run build
 
 # service
 FROM openjdk:17-jdk-slim
