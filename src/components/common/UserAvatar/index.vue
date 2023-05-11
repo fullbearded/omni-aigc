@@ -57,7 +57,7 @@ function loginHander(type: any) {
         每日剩余对话次数{{ userInfo.freeUser ? (userInfo.dailyLimit - userInfo.todayUsedQuota) : ((userInfo.totalQuota - userInfo.usedQuota) || 0) }}次
       </p>
       <p class="overflow-hidden text-gray-500 text-s text-ellipsis whitespace-nowrap" />
-      <div class="upgrade-but" @click="upgradeHandler">
+      <div class="upgrade-but" @click="upgradeHandler" style="display: none">
         用户升级计划
       </div>
 

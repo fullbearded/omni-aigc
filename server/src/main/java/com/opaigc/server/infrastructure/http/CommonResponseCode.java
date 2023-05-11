@@ -30,7 +30,7 @@ public enum CommonResponseCode implements ApiResponseCode {
 	UPLOAD_FILE_TOO_LARGE("100003", "超过文件大小上限，单个文件不能超过50MB", PAYLOAD_TOO_LARGE.value()),
 	UPLOAD_FILE_FAIL("100004", "文件上传失败，请重试", BAD_REQUEST.value()),
 	REQ_TIMEOUT("100005", "请求超时，请重试", REQUEST_TIMEOUT.value()),
-	ILLEGAL_REQUEST("100006", "非法请求", INTERNAL_SERVER_ERROR.value()),
+	ILLEGAL_REQUEST("100006", "非法请求，请登陆后重试", INTERNAL_SERVER_ERROR.value()),
 	RECORD_NOT_FOUND("100007", "数据未找到", NOT_FOUND.value()),
 	WEBCLIENT_NETWORK_TIMEOUT("100008", "网络超时，请重试", REQUEST_TIMEOUT.value()),
 	WEBCLIENT_ERROR("100009", "网络错误，请重试", INTERNAL_SERVER_ERROR.value()),

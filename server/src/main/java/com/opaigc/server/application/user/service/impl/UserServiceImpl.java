@@ -95,8 +95,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 		User user = getByCode(code).get();
 		Member member = memberService.findOrCreateByUserId(user.getId());
 
-		;
-
 		UserMemberDTO userMemberDTO = new UserMemberDTO();
 		BeanUtils.copyProperties(user, userMemberDTO);
 
