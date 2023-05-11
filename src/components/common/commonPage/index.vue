@@ -1,7 +1,11 @@
 <template>
     <div class="common-page">
         <p class="doc">
-        <div>AI交流群</div> OR <div>使用文档</div>
+				<!-- TODO: implement in the fiture			-->
+				<div style="display: none">
+					<div>AI交流群</div> OR <div>使用文档</div>
+				</div>
+
         </p>
         <p class="header">AIPRM - 提示模板</p>
         <div class="select-form">
@@ -94,7 +98,7 @@ watch(formValue.value, (newValue, oldValue) => {
     serch && clearTimeout(serch)
     serch = setTimeout(() => {
         console.log('sssdasd')
-    
+
         let prompts = DSDATA.prompts
         if (subject) {
             prompts = prompts.filter(item => (item.community == subject))

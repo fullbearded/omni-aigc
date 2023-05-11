@@ -915,7 +915,10 @@ onUnmounted(() => {
       </div>
     </footer>
     <div class="blow">
-      本站点基于外部API二次开发，仅供学习 AI 使用，使用前请知晓<a href="hhttp:www.baidu.com">免责申明</a>
+      本站点基于外部API二次开发，仅供学习 AI 使用，使用前请知晓
+			<a href="https://uw1yxsszx8.feishu.cn/docx/XIWydlDqPoNlAZxqk50c3eimnJe"
+				 target="_blank"
+				 style="font-weight: bold">免责申明</a>
     </div>
   </div>
 </template>

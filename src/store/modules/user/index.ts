@@ -20,11 +20,13 @@ export const useUserStore = defineStore('user-store', {
         localStorage.setItem('user', JSON.stringify(res.data))
         this.userInfo = res.data
       }).catch(res => {
+      	if(res.status === 403) {
+      		alert("权限错误，请重新登陆")
+				}
         console.log('catch', res)
-        
       })
     },
-    
+
     resetUserInfo() {
       this.userInfo = { ...defaultSetting().userInfo }
       this.recordState()
