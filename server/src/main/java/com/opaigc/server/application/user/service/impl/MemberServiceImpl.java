@@ -36,7 +36,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 		} else {
 			Member member = Member.builder().userId(userId)
 				.expireDate(LocalDateTime.now()).dailyLimit(appConfig.getDailyLimit())
-				.totalQuota(0).usedQuota(0).build();
+				.totalQuota(0l).usedQuota(0l).build();
 			save(member);
 			return member;
 		}

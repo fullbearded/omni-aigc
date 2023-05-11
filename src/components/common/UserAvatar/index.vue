@@ -54,7 +54,7 @@ function loginHander(type: any) {
         {{ userInfo.username || '' }}
       </h2>
       <p class="overflow-hidden font-bold text-md text-ellipsis whitespace-nowrap">
-        每日剩余对话次数{{ (userInfo.totalQuota - userInfo.usedQuota) || 0 }}次
+        每日剩余对话次数{{ userInfo.freeUser ? (userInfo.dailyLimit - userInfo.todayUsedQuota) : ((userInfo.totalQuota - userInfo.usedQuota) || 0) }}次
       </p>
       <p class="overflow-hidden text-gray-500 text-s text-ellipsis whitespace-nowrap" />
       <div class="upgrade-but" @click="upgradeHandler">

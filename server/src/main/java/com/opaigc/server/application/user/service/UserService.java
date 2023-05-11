@@ -94,19 +94,23 @@ public interface UserService extends IService<User> {
 		/**
 		 * 每日限额
 		 **/
-		private Integer dailyLimit;
+		private Long dailyLimit;
 		/**
 		 * 已使用额度
 		 **/
-		private Integer usedQuota;
+		private Long usedQuota;
 		/**
 		 * 已使用额度-免费
 		 **/
-		private Integer freeUsedQuota;
+		private Long freeUsedQuota;
 		/**
 		 * 总查询额度
 		 **/
-		private Integer totalQuota;
+		private Long totalQuota;
+		/**
+		 * 当天使用额度
+		 **/
+		private Long todayUsedQuota;
 
 		public Boolean isExpired() {
 			return expireDate.isBefore(LocalDateTime.now());

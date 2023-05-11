@@ -34,19 +34,19 @@ public class AppConfig {
 	/**
 	 * 每日限制
 	 **/
-	private Integer dailyLimit;
+	private Long dailyLimit;
 	/**
 	 * 匿名用户查询应用限制
 	 **/
-	private Integer anonymousQueryLimit;
+	private Long anonymousQueryLimit;
 	/**
 	 * 匿名用户预览应用限制
 	 **/
-	private Integer anonymousPreviewLimit;
+	private Long anonymousPreviewLimit;
 	/**
 	 * 匿名用户创建应用限制
 	 **/
-	private Integer anonymousCreateLimit;
+	private Long anonymousCreateLimit;
 
 	public String getApiToken() {
 		List<String> keyList = ListUtil.toList(apiKeys.split(","));

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.opaigc.server.application.user.service.UserService;
+import com.opaigc.server.infrastructure.exception.AppException;
 import com.opaigc.server.infrastructure.http.ApiResponse;
 import com.opaigc.server.infrastructure.http.CommonResponseCode;
 
@@ -31,7 +32,7 @@ public class AuthController {
 	@PostMapping("/registration")
 	public ApiResponse registerUserAccount(@RequestBody @Valid UserService.UserRegistrationParam req, HttpServletRequest request) {
 		if (userService.existsByUsernameOrMobile(req.getUsername(), req.getMobile())) {
-			return ApiResponse.error(CommonResponseCode.USERNAME_OR_MOBILE_EXIST);
+			throw new AppException(CommonResponseCode.USERNAME_OR_MOBILE_EXIST);
 		}
 		String remoteAddr = request.getRemoteAddr();
 		if (remoteAddr.equals("0:0:0:0:0:0:0:1")) {
