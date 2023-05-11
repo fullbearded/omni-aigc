@@ -925,7 +925,6 @@ onUnmounted(() => {
         href="https://uw1yxsszx8.feishu.cn/docx/XIWydlDqPoNlAZxqk50c3eimnJe" target="_blank"
         style="font-weight: bold"
       >免责申明</a>
-      >>>>>>> 69bf2f4e94546b07459aa1c6a6dc46dd6e50d58f
     </div>
   </div>
 </template>
