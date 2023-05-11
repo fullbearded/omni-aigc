@@ -26,12 +26,20 @@ service.interceptors.response.use((response: any) => {
     // throw new Error(response.status.toString())
   },
   (error) => {
+	// debugger
     console.log('error.response',error.response, messageAu)
     // messageAu.warning(error.response.data.message)
-    if(error.response && error.response.data){
-      alert(`${error.response.data.message}`)
-    }
-   
+		if (error.response && error.response.data) {
+			let data = {}
+			try {
+				data = JSON.parse(error.response.data)
+			} catch (error) {
+				console.log(error)
+				data = {}
+			}
+			alert(data.message ? data.message : `${error.response.data.message}`)
+		}
+
     return Promise.reject(error.response)
   },
 )

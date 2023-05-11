@@ -84,7 +84,7 @@ public class OpenAiController {
 	@CrossOrigin(origins = "*")
 	public Flux<String> streamCompletionsV2Anonymous(@RequestBody OpenAiService.CompletionsV2AnonymousRequest req,
 																									 HttpServletRequest request) {
-		IPLimiter queryLimit = new IPLimiter(appConfig.getAnonymousQueryLimit(),  24 * 60 * 60 * 1000);
+		IPLimiter queryLimit = new IPLimiter(Math.toIntExact(appConfig.getAnonymousQueryLimit()),  24 * 60 * 60 * 1000);
 		if (!queryLimit.isAllowed(request.getRemoteAddr())) {
 			throw new AppException(CommonResponseCode.REMOTE_IP_MAX_LIMIT);
 		}
@@ -108,7 +108,7 @@ public class OpenAiController {
 	@PostMapping(value = "/chat/stream/anonymous", produces = MediaType.TEXT_EVENT_STREAM_VALUE + ";charset=UTF-8")
 	@CrossOrigin(origins = "*")
 	public Flux<String> streamCompletionsAnonymous(@RequestBody OpenAiService.CompletionsAnonymousRequest req, HttpServletRequest request) {
-		IPLimiter previewLimit = new IPLimiter(appConfig.getAnonymousPreviewLimit(),  24 * 60 * 60 * 1000);
+		IPLimiter previewLimit = new IPLimiter(Math.toIntExact(appConfig.getAnonymousPreviewLimit()),  24 * 60 * 60 * 1000);
 		if (!previewLimit.isAllowed(request.getRemoteAddr())) {
 			throw new AppException(CommonResponseCode.REMOTE_IP_MAX_LIMIT);
 		}

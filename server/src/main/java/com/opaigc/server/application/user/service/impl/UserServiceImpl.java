@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.opaigc.server.application.sso.service.impl.UserDetailsServiceImpl;
 import com.opaigc.server.application.user.domain.Member;
 import com.opaigc.server.application.user.domain.User;
+import com.opaigc.server.application.user.domain.UserChat;
 import com.opaigc.server.application.user.mapper.UserMapper;
 import com.opaigc.server.application.user.service.MemberService;
+import com.opaigc.server.application.user.service.UserChatService;
 import com.opaigc.server.application.user.service.UserService;
+import com.opaigc.server.config.AppConfig;
 import com.opaigc.server.infrastructure.exception.AppException;
 import com.opaigc.server.infrastructure.http.CommonResponseCode;
 import com.opaigc.server.infrastructure.utils.CodeUtil;
@@ -32,6 +34,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private AppConfig appConfig;
+
+	@Autowired
+	private UserChatService userChatService;
 
 
 	@Override
@@ -87,6 +95,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 		User user = getByCode(code).get();
 		Member member = memberService.findOrCreateByUserId(user.getId());
 
+		;
+
 		UserMemberDTO userMemberDTO = new UserMemberDTO();
 		BeanUtils.copyProperties(user, userMemberDTO);
 
@@ -94,6 +104,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 		userMemberDTO.setDailyLimit(member.getDailyLimit());
 		userMemberDTO.setUsedQuota(member.getUsedQuota());
 		userMemberDTO.setTotalQuota(member.getTotalQuota());
+		userMemberDTO.setTodayUsedQuota(userChatService.todayUsedQuota(member.getUserId()));
+
+		if (member.isFreeUser()) {
+			userMemberDTO.setDailyLimit(appConfig.getDailyLimit());
+		}
 		return userMemberDTO;
 	}
 }

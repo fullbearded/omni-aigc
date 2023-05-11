@@ -83,7 +83,7 @@ public class AnonymousController {
 	 **/
 	@PostMapping("/app/create/anonymous")
 	public ApiResponse anonymousCreate(@RequestBody AppService.AppCreateParam req, HttpServletRequest request) {
-		IPLimiter limiter = new IPLimiter(appConfig.getAnonymousCreateLimit(), 24 * 60 * 60 * 1000);
+		IPLimiter limiter = new IPLimiter(Math.toIntExact(appConfig.getAnonymousCreateLimit()), 24 * 60 * 60 * 1000);
 		if (!limiter.isAllowed(request.getRemoteAddr())) {
 			throw new AppException(CommonResponseCode.APP_WITH_ANONYMOUS_MAX_LIMIT);
 		}

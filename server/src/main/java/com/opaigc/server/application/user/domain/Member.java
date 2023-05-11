@@ -37,19 +37,19 @@ public class Member {
 	/**
 	 * 每日限额
 	 **/
-	private Integer dailyLimit;
+	private Long dailyLimit;
 	/**
 	 * 已使用额度-免费
 	 **/
-	private Integer freeUsedQuota;
+	private Long freeUsedQuota;
 	/**
 	 * 已使用额度
 	 **/
-	private Integer usedQuota;
+	private Long usedQuota;
 	/**
 	 * 总查询额度
 	 **/
-	private Integer totalQuota;
+	private Long totalQuota;
 
 	/**
 	 * 乐观锁版本号

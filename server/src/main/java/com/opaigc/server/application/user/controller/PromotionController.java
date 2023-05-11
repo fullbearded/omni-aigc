@@ -136,9 +136,9 @@ public class PromotionController {
 	static class PromotionTypeDTO {
 		private Promotion.Type type;
 		private String description;
-		private int dailyUsageLimit;
+		private Long dailyUsageLimit;
 		private int effectiveDays;
-		private int totalCapacity;
+		private Long totalCapacity;
 		private int price;
 		private String paymentMethod;
 		private String paymentValue;

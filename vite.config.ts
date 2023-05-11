@@ -32,11 +32,11 @@ export default defineConfig((env) => {
     },
     plugins: setupPlugins(viteEnv),
     server: {
-      port: 1002,
+      port: 9000,
       open: false,
       proxy: {
         '/api': {
-          target: 'https://chat.opaigc.com',
+          target: 'http://localhost:8080',
           changeOrigin: true, // 允许跨域
           rewrite: path => path.replace('/api/', '/'),
         },

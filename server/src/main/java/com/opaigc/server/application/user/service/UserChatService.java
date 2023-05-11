@@ -10,4 +10,7 @@ import com.opaigc.server.application.user.domain.UserChat;
  * @date 2023/4/9
  */
 public interface UserChatService extends IService<UserChat> {
+
+	Long todayUsedQuota(Long userId);
+
 }

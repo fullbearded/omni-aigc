@@ -106,25 +106,25 @@ public class Promotion {
 	@Getter
 	@RequiredArgsConstructor
 	public enum Type {
-		EXPERIENCE_X("次数体验版", "E", 10, 100, 31,
-			100, 899, "redeem", "https://opaigc.com"),
-		EXPERIENCE_S("次数体验版", "E", 10, 600, 31,
-			600, 2999, "redeem", "https://opaigc.com"),
-		MONTH_PACKAGE_X("月度体验版", "X", 10, 100, 31,
-			3500, 1999, "redeem", "https://opaigc.com"),
-		MONTH_PACKAGE_S("月度基础版", "S", 10, 200, 31,
-			10000, 4999, "redeem", "https://opaigc.com"),
-		MONTH_PACKAGE_L("月度进阶版", "M", 10, 600, 31,
-			20000, 9999, "redeem", "https://opaigc.com"),
-		MONTH_PACKAGE_B("月度专业版", "P", 10, 2000, 31,
-			50000, 14999, "redeem", "https://opaigc.com"),
+		EXPERIENCE_X("次数体验版", "E", 10, 100l, 31,
+			100l, 899, "redeem", "https://opaigc.com"),
+		EXPERIENCE_S("次数体验版", "E", 10, 600l, 31,
+			600l, 2999, "redeem", "https://opaigc.com"),
+		MONTH_PACKAGE_X("月度体验版", "X", 10, 100l, 31,
+			3500l, 1999, "redeem", "https://opaigc.com"),
+		MONTH_PACKAGE_S("月度基础版", "S", 10, 200l, 31,
+			10000l, 4999, "redeem", "https://opaigc.com"),
+		MONTH_PACKAGE_L("月度进阶版", "M", 10, 600l, 31,
+			20000l, 9999, "redeem", "https://opaigc.com"),
+		MONTH_PACKAGE_B("月度专业版", "P", 10, 2000l, 31,
+			50000l, 14999, "redeem", "https://opaigc.com"),
 		;
 		private final String description;
 		private final String codePrefix;
 		private final int codeLength;
-		private final int dailyUsageLimit;
+		private final Long dailyUsageLimit;
 		private final int effectiveDays;
-		private final int totalCapacity;
+		private final Long totalCapacity;
 		private final int price;
 		private final String paymentMethod;
 		private final String paymentValue;
