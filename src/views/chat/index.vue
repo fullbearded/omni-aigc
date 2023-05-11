@@ -865,18 +865,12 @@ onUnmounted(() => {
       </div>
     </main>
     <div class="precess">
-<<<<<<< HEAD
-      <div class="prompt">
+      <div v-if="promptTitle" class="prompt">
         {{ promptTitle }}
       </div>
       <NForm inline :label-width="80" :model="precessForm">
         <NGrid cols="10 400:12 600:24" :x-gap="12" responsive="self" :item-responsive="true">
           <NFormItemGi :span="5" offset="5" label="输出语言" path="precessForm.languge" class="prompt-box">
-=======
-      <NForm inline :label-width="80" :model="precessForm">
-        <NGrid cols="10 400:12 600:24" :x-gap="12" responsive="self" :item-responsive="true">
-          <NFormItemGi :span="5" offset="5" label="输出语言" path="precessForm.languge">
->>>>>>> 69bf2f4e94546b07459aa1c6a6dc46dd6e50d58f
             <NSelect v-model:value="precessForm.languge" placeholder="请选择" :options="langugeList" value-field="value" />
           </NFormItemGi>
           <NFormItemGi :span="5" label="语气" path="precessForm.tone">
@@ -926,14 +920,12 @@ onUnmounted(() => {
       </div>
     </footer>
     <div class="blow">
-<<<<<<< HEAD
-      本站点基于外部API二次开发，仅供学习 AI 使用，使用前请知晓<a href="hhttp:www.baidu.com">免责申明</a>
-=======
       本站点基于外部API二次开发，仅供学习 AI 使用，使用前请知晓
-			<a href="https://uw1yxsszx8.feishu.cn/docx/XIWydlDqPoNlAZxqk50c3eimnJe"
-				 target="_blank"
-				 style="font-weight: bold">免责申明</a>
->>>>>>> 69bf2f4e94546b07459aa1c6a6dc46dd6e50d58f
+      <a
+        href="https://uw1yxsszx8.feishu.cn/docx/XIWydlDqPoNlAZxqk50c3eimnJe" target="_blank"
+        style="font-weight: bold"
+      >免责申明</a>
+      >>>>>>> 69bf2f4e94546b07459aa1c6a6dc46dd6e50d58f
     </div>
   </div>
 </template>
@@ -942,7 +934,8 @@ onUnmounted(() => {
 .prompt-box {
   position: relative;
 }
-.prompt{
+
+.prompt {
   width: fit-content;
   padding: 4px 15px;
   background: #c0ccdc;

@@ -54,17 +54,11 @@ function loginHander(type: any) {
         {{ userInfo.username || '' }}
       </h2>
       <p class="overflow-hidden font-bold text-md text-ellipsis whitespace-nowrap">
-<<<<<<< HEAD
-        每日剩余对话次数{{ (userInfo.totalQuota - userInfo.usedQuota) || 0 }}次
-      </p>
-      <p class="overflow-hidden text-gray-500 text-s text-ellipsis whitespace-nowrap" />
-      <div class="upgrade-but" @click="upgradeHandler">
-=======
         每日剩余对话次数{{ userInfo.freeUser ? (userInfo.dailyLimit - userInfo.todayUsedQuota) : ((userInfo.totalQuota - userInfo.usedQuota) || 0) }}次
       </p>
-      <p class="overflow-hidden text-gray-500 text-s text-ellipsis whitespace-nowrap" />
-      <div class="upgrade-but" @click="upgradeHandler" style="display: none">
->>>>>>> 69bf2f4e94546b07459aa1c6a6dc46dd6e50d58f
+      <!-- <p class="overflow-hidden text-gray-500 text-s text-ellipsis whitespace-nowrap" /> -->
+
+      <div class="upgrade-but" style="display: none" @click="upgradeHandler">
         用户升级计划
       </div>
 
@@ -75,8 +69,8 @@ function loginHander(type: any) {
         登陆账户
       </h3>
     </div>
+    <login :visible-login="visibleLogin" @loginHander="loginHander" />
   </div>
-  <login :visible-login="visibleLogin" @loginHander="loginHander" />
 </template>
 
 <style scoped>

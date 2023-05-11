@@ -14,23 +14,18 @@ export const useUserStore = defineStore('user-store', {
     // 获取用户信息
     getUserInfor() {
       request({
-        url: api.getUserInfo
-      }).then(res => {
+        url: api.getUserInfo,
+      }).then((res) => {
         console.log(res)
         localStorage.setItem('user', JSON.stringify(res.data))
         this.userInfo = res.data
-      }).catch(res => {
-      	if(res.status === 403) {
-      		alert("权限错误，请重新登陆")
-				}
+      }).catch((res) => {
+      	if (res.status === 403)
+      		alert('权限错误，请重新登陆')
+
         console.log('catch', res)
       })
     },
-<<<<<<< HEAD
-    
-=======
-
->>>>>>> 69bf2f4e94546b07459aa1c6a6dc46dd6e50d58f
     resetUserInfo() {
       this.userInfo = { ...defaultSetting().userInfo }
       this.recordState()
