@@ -45,7 +45,7 @@ export default defineConfig((env) => {
     base: './',
     build: {
       reportCompressedSize: false,
-      assetsDir: './asstes/',
+      assetsDir: './assets/',
       sourcemap: false,
       commonjsOptions: {
         ignoreTryCatch: false,
