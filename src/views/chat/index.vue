@@ -187,22 +187,42 @@ function handleSubmit() {
 		messageAu.warning("请先登录,再进行会话!!");
 		return;
 	}
-  // console.log(conversationList)
-  const reqList = []
+  console.log(conversationList)
+  const reqList = buildRequestMessage()
   loading.value = false
-  conversationList.value.forEach((item) => {
-    reqList.push({
-      role: 'user',
-      content: item.requestOptions.prompt,
-    })
-    reqList.push({
-      role: 'assistant',
-      content: item.text,
-    })
-  },
-  )
-  // console.log(reqList)
+
+	console.log("submit")
   onConversation(reqList)
+}
+
+function buildRequestMessage() {
+	const reqList = []
+	// 使用上下文
+	if(usingContext.value) {
+		conversationList.value.forEach((item) => {
+			reqList.push({
+				role: 'user',
+				content: item.requestOptions.prompt,
+			})
+			reqList.push({
+				role: 'assistant',
+				content: item.text,
+			})
+		})
+		// 不使用上下文
+	} else {
+		conversationList.value.length > 0 && [conversationList.value[conversationList.value.length - 1]].forEach((item) => {
+			reqList.push({
+				role: 'user',
+				content: item.requestOptions.prompt,
+			})
+			reqList.push({
+				role: 'assistant',
+				content: item.text,
+			})
+		})
+	}
+	return reqList;
 }
 
 function handleReSubmit() {
@@ -212,23 +232,11 @@ function handleReSubmit() {
 		messageAu.warning("请先登录,再进行会话!!");
 		return;
 	}
-  // console.log(conversationList)
+	console.log("Resubmit")
+  console.log(conversationList)
   loading.value = true
   let message = prompt.value
-  const reqList = []
-  conversationList.value.forEach((item) => {
-    if (!item.requestOptions.prompt && !item.text)
-      return
-    reqList.push({
-      role: 'user',
-      content: item.requestOptions.prompt,
-    })
-    reqList.push({
-      role: 'assistant',
-      content: item.text,
-    })
-  },
-  )
+	const reqList = buildRequestMessage()
   prompt.value = ''
 
   let options: Chat.ConversationRequest = {}
@@ -291,10 +299,13 @@ function handleReSubmit() {
           try {
             const chunk1 = chunk.split('\n').filter(item => item)
             // console.log('chunk1', chunk1)
+						const doneArr = chunk1.map(item => JSON.parse(item.split('data:')[1]).done)
+						const done = doneArr[doneArr.length -1]
             const chunk2 = chunk1.map(item => JSON.parse(item.split('data:')[1]).message).join('')
             // console.log('chunk2', chunk2, lastText)
             const data = chunk2
-            // console.log('data1', uuid, lastText + chunk2)
+            console.log('data1', uuid, lastText + chunk2)
+						loading.value = !done
             options = {}
             updateChat(
               +uuid,
@@ -320,7 +331,7 @@ function handleReSubmit() {
             scrollToBottomIfAtBottom()
           }
           catch (error) {
-            //
+            // debugger
           }
         },
       })
@@ -329,7 +340,8 @@ function handleReSubmit() {
     fetchChatAPIOnce()
   }
   catch (error: any) {
-    console.log('sss', error)
+		// debugger
+    // console.log('sss', error)
     loading.value = false
     const errorMessage = error?.message ?? t('common.wrong')
 
@@ -485,10 +497,14 @@ async function onConversation(reqList) {
             chunk = responseText.substring(0, lastIndex)
           try {
             const chunk1 = chunk.split('\n').filter(item => item)
+						const doneArr = chunk1.map(item => JSON.parse(item.split('data:')[1]).done)
+						const done = doneArr[doneArr.length -1]
             const chunk2 = chunk1.map(item => JSON.parse(item.split('data:')[1]).message).join('')
-
             const data = chunk2
-            // console.log('data2', uuid, lastText + chunk2, 'sdsd')
+						// loading.value = done
+						// console.log('data2222', uuid, done)
+            console.log('data2', uuid, lastText + chunk2, 'sdsd')
+						loading.value = !done
             updateChat(
               +uuid,
               dataSources.value.length - 1,
@@ -513,15 +529,17 @@ async function onConversation(reqList) {
             scrollToBottomIfAtBottom()
           }
           catch (error) {
-            //
+            //debugger
+						// debugger
           }
         },
-      })
+      }).catch()
     }
 
     fetchChatAPIOnce()
   }
   catch (error: any) {
+		// debugger
     const errorMessage = error?.message ?? t('common.wrong')
     loading.value = false
     if (error.message === 'canceled') {
@@ -567,7 +585,7 @@ async function onConversation(reqList) {
     scrollToBottomIfAtBottom()
   }
   finally {
-    // loading.value = false
+    loading.value = false
   }
 }
 
@@ -584,7 +602,7 @@ async function onRegenerate(index: number) {
   if (requestOptions.options)
     options = { ...requestOptions.options }
 
-  loading.value = true
+  // loading.value = true
 
   updateChat(
     +uuid,
@@ -603,7 +621,7 @@ async function onRegenerate(index: number) {
   try {
     let lastText = ''
     const fetchChatAPIOnce = async () => {
-      console.log('ssssssss')
+      // console.log('ssssssss')
       return
       await fetchChatAPIProcess<Chat.ConversationResponse>({
         prompt: transformData(completPrompt.value, 'prompt', message, precessForm.value.languge),
@@ -641,6 +659,7 @@ async function onRegenerate(index: number) {
           }
           catch (error) {
             //
+						// debugger
           }
         },
       })
@@ -648,6 +667,7 @@ async function onRegenerate(index: number) {
     await fetchChatAPIOnce()
   }
   catch (error: any) {
+		// debugger
     if (error.message === 'canceled') {
       updateChatSome(
         +uuid,
@@ -753,6 +773,8 @@ function handleClear() {
 }
 
 function handleEnter(event: KeyboardEvent) {
+	if (loading.value)
+		return
   if (!isMobile.value) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault()
@@ -769,7 +791,7 @@ function handleEnter(event: KeyboardEvent) {
 
 function handleStop() {
   if (loading.value) {
-    console.log('stop', controller)
+    // console.log('stop', controller)
     source.cancel()
     loading.value = false
   }
@@ -779,7 +801,7 @@ function handleStop() {
 // 搜索选项计算，这里使用value作为索引项，所以当出现重复value时渲染异常(多项同时出现选中效果)
 // 理想状态下其实应该是key作为索引项,但官方的renderOption会出现问题，所以就需要value反renderLabel实现
 const searchOptions = computed(() => {
-  console.log('prompt.value', prompt.value)
+  // console.log('prompt.value', prompt.value)
   try {
     if (prompt.value && prompt.value.startsWith('/')) {
       return promptTemplate.value.filter((item: { key: string }) => item.key.toLowerCase().includes(prompt.value.substring(1).toLowerCase())).map((obj: { value: any }) => {
