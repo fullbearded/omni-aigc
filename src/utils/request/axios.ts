@@ -20,15 +20,13 @@ service.interceptors.response.use(
   (response: any) => {
     if (response.status === 200)
       return response.data
-
-    // throw new Error(response.status.toString())
   },
   (error) => {
     if (error.response.status === 500) {
       alert('服务器错误')
     }
     else {
-      console.log('error.response', error.response, messageAu)
+      console.log('error.response', error.response)
       // messageAu.warning(error.response.data.message)
       if (error.response && error.response.data) {
         let data = {}
