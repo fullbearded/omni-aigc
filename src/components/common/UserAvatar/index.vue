@@ -37,6 +37,13 @@ function loginHander(type: any) {
     visibleLogin.value = true
   }
 }
+function getVipTodayLimit(userInfo) {
+	if (userInfo.freeUser) {
+		return Math.max((userInfo.dailyLimit - userInfo.todayUsedQuota), 0)
+	} else {
+		return Math.max((userInfo.dailyLimit - userInfo.todayUsedQuota), 0)
+	}
+}
 </script>
 
 <template>
@@ -55,7 +62,7 @@ function loginHander(type: any) {
       </h2>
       <p class="overflow-hidden font-bold text-md text-ellipsis whitespace-nowrap">
 				每日剩余对话次数{{
-					userInfo.freeUser ? Math.max((userInfo.dailyLimit - userInfo.todayUsedQuota), 0) : Math.max(((userInfo.totalQuota - userInfo.usedQuota) || 0), 0)
+					getVipTodayLimit(userInfo) || 0
 				}}次
       </p>
       <!-- <p class="overflow-hidden text-gray-500 text-s text-ellipsis whitespace-nowrap" /> -->
