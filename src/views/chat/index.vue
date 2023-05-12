@@ -16,9 +16,10 @@ import HeaderComponent from './components/Header/index.vue'
 import commonPage from '@/components/common/commonPage/index.vue'
 import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
-import { useChatStore, usePromptStore } from '@/store'
+import {useAuthStore, useChatStore, usePromptStore, useSettingStore} from '@/store'
 import { transformData } from '@/utils/functions'
 import { fetchChatAPIProcess } from '@/api'
+const messageAu = useMessage()
 import { t } from '@/locales'
 
 const controller = new AbortController()
@@ -55,6 +56,8 @@ const CancelToken = axios.CancelToken
 let source = CancelToken.source()
 const precessForm = ref({
   languge: 'In Chinese',
+	tone: '',
+	textTyle: ''
 })
 const langugeList = [{
   value: 'In Chinese',
@@ -178,7 +181,13 @@ dataSources.value.forEach((item, index) => {
 })
 
 function handleSubmit() {
-  console.log(conversationList)
+	const authStore = useAuthStore();
+	if (!authStore.isLogin) {
+		loading.value = false
+		messageAu.warning("请先登录,再进行会话!!");
+		return;
+	}
+  // console.log(conversationList)
   const reqList = []
   loading.value = false
   conversationList.value.forEach((item) => {
@@ -192,12 +201,18 @@ function handleSubmit() {
     })
   },
   )
-  console.log(reqList)
+  // console.log(reqList)
   onConversation(reqList)
 }
 
 function handleReSubmit() {
-  console.log(conversationList)
+	const authStore = useAuthStore();
+	if (!authStore.isLogin) {
+		loading.value = false
+		messageAu.warning("请先登录,再进行会话!!");
+		return;
+	}
+  // console.log(conversationList)
   loading.value = true
   let message = prompt.value
   const reqList = []
@@ -235,7 +250,7 @@ function handleReSubmit() {
     },
   )
   scrollToBottom()
-  console.log('promptv', prompt, completPrompt, message)
+  // console.log('promptv', prompt, completPrompt, message)
   // return
   source = CancelToken.source()
   try {
@@ -250,14 +265,14 @@ function handleReSubmit() {
         onDownloadProgress: ({ event }) => {
           const xhr = event.target
           const { responseText } = xhr
-          console.log('responseText', responseText)
+          // console.log('responseText', responseText)
           // if (responseText.status !== 200) {
           //   loading.value = false
           // }
           // Always process the final line
           const lastIndex = responseText.lastIndexOf('\n', responseText.length - 2)
           let chunk = responseText
-          console.log('lastIndex', lastIndex - responseText.length, lastIndex)
+          // console.log('lastIndex', lastIndex - responseText.length, lastIndex)
           if (lastIndex === -1) {
             updateChatSome(
               +uuid,
@@ -272,14 +287,14 @@ function handleReSubmit() {
           }
           if (lastIndex !== -1)
             chunk = responseText.substring(0, lastIndex)
-          console.log('chunk', chunk)
+          // console.log('chunk', chunk)
           try {
             const chunk1 = chunk.split('\n').filter(item => item)
-            console.log('chunk1', chunk1)
+            // console.log('chunk1', chunk1)
             const chunk2 = chunk1.map(item => JSON.parse(item.split('data:')[1]).message).join('')
-            console.log('chunk2', chunk2, lastText)
+            // console.log('chunk2', chunk2, lastText)
             const data = chunk2
-            console.log('data1', uuid, lastText + chunk2)
+            // console.log('data1', uuid, lastText + chunk2)
             options = {}
             updateChat(
               +uuid,
@@ -364,6 +379,15 @@ function handleReSubmit() {
     loading.value = true
   }
 }
+function buildPromptWithStyleAndOther(extractMessage) {
+	if (precessForm.value.textTyle && precessForm.value.textTyle !== '') {
+		extractMessage = extractMessage + ",literary style is " + precessForm.value.textTyle;
+	}
+	if(precessForm.value.tone && precessForm.value.tone !== '') {
+		extractMessage = extractMessage + ",tone is" + precessForm.value.tone;
+	}
+	return extractMessage;
+}
 
 async function onConversation(reqList) {
   let message = prompt.value
@@ -431,7 +455,7 @@ async function onConversation(reqList) {
           ...reqList,
           {
             role: 'user',
-            content: transformData(completPrompt.value, 'prompt', message, precessForm.value.languge) || message,
+            content: buildPromptWithStyleAndOther(transformData(completPrompt.value, 'prompt', message, precessForm.value.languge) || message),
           },
         ],
         cancelToken: source.token,
@@ -439,11 +463,11 @@ async function onConversation(reqList) {
         onDownloadProgress: ({ event }) => {
           const xhr = event.target
           const { responseText } = xhr
-          console.log('responseText', responseText)
+          // console.log('responseText', responseText)
           // Always process the final line
           const lastIndex = responseText.lastIndexOf('\n', responseText.length - 2)
           let chunk = responseText
-          console.log('lastIndex', lastIndex - responseText.length, lastIndex)
+          // console.log('lastIndex', lastIndex - responseText.length, lastIndex)
           if (lastIndex === -1) {
             updateChatSome(
               +uuid,
@@ -464,7 +488,7 @@ async function onConversation(reqList) {
             const chunk2 = chunk1.map(item => JSON.parse(item.split('data:')[1]).message).join('')
 
             const data = chunk2
-            console.log('data2', uuid, lastText + chunk2, 'sdsd')
+            // console.log('data2', uuid, lastText + chunk2, 'sdsd')
             updateChat(
               +uuid,
               dataSources.value.length - 1,
@@ -864,11 +888,11 @@ onUnmounted(() => {
         </div>
       </div>
     </main>
-    <div class="precess">
+    <div class="precess" v-if="!dataSources.length">
       <div v-if="promptTitle" class="prompt">
         {{ promptTitle }}
       </div>
-      <NForm inline :label-width="80" :model="precessForm">
+      <NForm  inline :label-width="80" :model="precessForm">
         <NGrid cols="10 400:12 600:24" :x-gap="12" responsive="self" :item-responsive="true">
           <NFormItemGi :span="5" offset="5" label="输出语言" path="precessForm.languge" class="prompt-box">
             <NSelect v-model:value="precessForm.languge" placeholder="请选择" :options="langugeList" value-field="value" />
