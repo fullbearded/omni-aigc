@@ -16,7 +16,7 @@ import HeaderComponent from './components/Header/index.vue'
 import commonPage from '@/components/common/commonPage/index.vue'
 import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
-import {useAuthStore, useChatStore, usePromptStore, useSettingStore} from '@/store'
+import {useAuthStore, useChatStore, usePromptStore, useSettingStore, useUserStore} from '@/store'
 import { transformData } from '@/utils/functions'
 import { fetchChatAPIProcess } from '@/api'
 const messageAu = useMessage()
@@ -32,6 +32,7 @@ const dialog = useDialog()
 const ms = useMessage()
 
 const chatStore = useChatStore()
+const userStore = useUserStore()
 
 useCopyCode()
 
@@ -44,6 +45,10 @@ const { uuid } = route.params as { uuid: string }
 
 const dataSources = computed(() => chatStore.getChatByUuid(+uuid))
 const currentPrompt = computed(() => chatStore.prompt)
+const userInfo = computed(() => userStore.userInfo)
+console.log("#########")
+console.log(userInfo.value)
+console.log("#########")
 
 const conversationList = computed(() => dataSources.value.filter(item => (!item.inversion && !item.error)))
 
@@ -57,7 +62,8 @@ let source = CancelToken.source()
 const precessForm = ref({
   languge: 'In Chinese',
 	tone: '',
-	textTyle: ''
+	textTyle: '',
+	model: 'gpt-3.5-turbo'
 })
 const langugeList = [{
   value: 'In Chinese',
@@ -65,6 +71,17 @@ const langugeList = [{
 }, {
   value: 'In English',
   label: 'English',
+}]
+const modelList = [{
+	value: 'gpt-3.5-turbo',
+	label: 'gpt-3.5-turbo',
+}]
+const vipModelList = [{
+	value: 'gpt-3.5-turbo',
+	label: 'gpt-3.5-turbo',
+}, {
+	value: 'gpt-4',
+	label: 'gpt-4',
 }]
 const toneList = [{
   value: '权威',
@@ -916,13 +933,23 @@ onUnmounted(() => {
       </div>
       <NForm  inline :label-width="80" :model="precessForm">
         <NGrid cols="10 400:12 600:24" :x-gap="12" responsive="self" :item-responsive="true">
-          <NFormItemGi :span="5" offset="5" label="输出语言" path="precessForm.languge" class="prompt-box">
-            <NSelect v-model:value="precessForm.languge" placeholder="请选择" :options="langugeList" value-field="value" />
-          </NFormItemGi>
-          <NFormItemGi :span="5" label="语气" path="precessForm.tone">
+					<div v-if="userInfo && userInfo.equities !== null && userInfo.equities.gpt4">
+						<NFormItemGi :span="3" offset="3" label="模型" path="precessForm.model" class="prompt-box">
+							<NSelect v-model:value="precessForm.model" placeholder="请选择" :options="modelList" value-field="value" />
+						</NFormItemGi>
+						<NFormItemGi :span="4" label="输出语言" path="precessForm.languge" class="prompt-box">
+							<NSelect v-model:value="precessForm.languge" placeholder="请选择" :options="langugeList" value-field="value" />
+						</NFormItemGi>
+					</div>
+					<div v-if="!(userInfo && userInfo.equities && userInfo.equities.gpt4)">
+						<NFormItemGi :span="4" offset="3" label="输出语言" path="precessForm.languge" class="prompt-box">
+							<NSelect v-model:value="precessForm.languge" placeholder="请选择" :options="langugeList" value-field="value" />
+						</NFormItemGi>
+					</div>
+          <NFormItemGi :span="4" label="语气" path="precessForm.tone">
             <NSelect v-model:value="precessForm.tone" placeholder="请选择" :options="toneList" value-field="value" />
           </NFormItemGi>
-          <NFormItemGi :span="5" label="文字风格" path="precessForm.textTyle">
+          <NFormItemGi :span="4" label="文字风格" path="precessForm.textTyle">
             <NSelect v-model:value="precessForm.textTyle" placeholder="请选择" :options="textTyleList" value-field="value" />
           </NFormItemGi>
         </NGrid>

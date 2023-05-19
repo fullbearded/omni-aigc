@@ -2,10 +2,15 @@ import { ss } from '@/utils/storage'
 
 const LOCAL_NAME = 'userStorage'
 
+export interface UserQuities {
+	gpt4: boolean;
+}
+
 export interface UserInfo {
   avatar: string
   name: string
   description: string
+	equities: UserQuities
 }
 
 export interface UserState {
@@ -16,8 +21,11 @@ export function defaultSetting(): UserState {
   return {
     userInfo: {
       avatar: 'https://raw.githubusercontent.com/Chanzhaoyu/chatgpt-web/main/src/assets/avatar.jpg',
-      name: 'ChenZhaoYu',
-      description: 'Star on <a href="https://github.com/Chanzhaoyu/chatgpt-bot" class="text-blue-500" target="_blank" >Github</a>',
+      name: 'Jerry',
+      description: '',
+			equities: {
+				gpt4: false
+			}
     },
   }
 }

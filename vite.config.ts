@@ -36,7 +36,8 @@ export default defineConfig((env) => {
       open: false,
       proxy: {
         '/api': {
-          target: 'https://api.opaigc.com/',
+          // target: 'https://api.opaigc.com/',
+          target: 'http://localhost:8080/',
           changeOrigin: true, // 允许跨域
           rewrite: path => path.replace('/api/', '/'),
         },
