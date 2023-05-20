@@ -22,7 +22,7 @@ service.interceptors.response.use(
       return response.data
   },
   (error) => {
-    if (error.response.status === 500) {
+    if (error.respons && error.response.status === 500) {
       alert('服务器错误')
     }
     else {

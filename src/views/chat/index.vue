@@ -43,12 +43,16 @@ const { usingContext, toggleUsingContext } = useUsingContext()
 
 const { uuid } = route.params as { uuid: string }
 
+const gptModel = ref('gpt-3.5-turbo') // 初始化为默认值
+const modelText = computed(() => {
+	return localStorage.getItem(modelLocalStorgeKey(uuid)) || gptModel.value
+})
+
 const dataSources = computed(() => chatStore.getChatByUuid(+uuid))
 const currentPrompt = computed(() => chatStore.prompt)
 const userInfo = computed(() => userStore.userInfo)
-console.log("#########")
-console.log(userInfo.value)
-console.log("#########")
+
+const showGpt4 = computed(() => userInfo && userInfo.value && userInfo.value.equities !== null && userInfo.value.equities.gpt4)
 
 const conversationList = computed(() => dataSources.value.filter(item => (!item.inversion && !item.error)))
 
@@ -71,10 +75,6 @@ const langugeList = [{
 }, {
   value: 'In English',
   label: 'English',
-}]
-const modelList = [{
-	value: 'gpt-3.5-turbo',
-	label: 'gpt-3.5-turbo',
 }]
 const vipModelList = [{
 	value: 'gpt-3.5-turbo',
@@ -197,6 +197,10 @@ dataSources.value.forEach((item, index) => {
     updateChatSome(+uuid, index, { loading: false })
 })
 
+function modelLocalStorgeKey(uuid: any) {
+	return "model-" + uuid;
+}
+
 function handleSubmit() {
 	const authStore = useAuthStore();
 	if (!authStore.isLogin) {
@@ -204,11 +208,23 @@ function handleSubmit() {
 		messageAu.warning("请先登录,再进行会话!!");
 		return;
 	}
-  console.log(conversationList)
+  // console.log(conversationList)
   const reqList = buildRequestMessage()
   loading.value = false
 
-	console.log("submit")
+	if (localStorage.getItem(modelLocalStorgeKey(uuid))) {
+		gptModel.value = localStorage.getItem(modelLocalStorgeKey(uuid));
+	} else {
+		let localModel = precessForm.value.model;
+		if (!(localModel && localModel === "gpt-4")) {
+			localModel = "gpt-3.5-turbo";
+		}
+		gptModel.value = localModel;
+		localStorage.setItem(modelLocalStorgeKey(uuid), gptModel.value);
+	}
+
+
+	// console.log("submit")
   onConversation(reqList)
 }
 
@@ -249,8 +265,8 @@ function handleReSubmit() {
 		messageAu.warning("请先登录,再进行会话!!");
 		return;
 	}
-	console.log("Resubmit")
-  console.log(conversationList)
+	// console.log("Resubmit")
+  // console.log(conversationList)
   loading.value = true
   let message = prompt.value
 	const reqList = buildRequestMessage()
@@ -285,6 +301,7 @@ function handleReSubmit() {
         messages: [
           ...reqList,
         ],
+				model: gptModel.value,
         cancelToken: source.token,
         token: localStorage.getItem('token') || '',
         onDownloadProgress: ({ event }) => {
@@ -321,7 +338,7 @@ function handleReSubmit() {
             const chunk2 = chunk1.map(item => JSON.parse(item.split('data:')[1]).message).join('')
             // console.log('chunk2', chunk2, lastText)
             const data = chunk2
-            console.log('data1', uuid, lastText + chunk2)
+            // console.log('data1', uuid, lastText + chunk2)
 						loading.value = !done
             options = {}
             updateChat(
@@ -487,6 +504,7 @@ async function onConversation(reqList) {
             content: buildPromptWithStyleAndOther(transformData(completPrompt.value, 'prompt', message, precessForm.value.languge) || message),
           },
         ],
+				model: gptModel.value,
         cancelToken: source.token,
         token: localStorage.getItem('token') || '',
         onDownloadProgress: ({ event }) => {
@@ -520,7 +538,7 @@ async function onConversation(reqList) {
             const data = chunk2
 						// loading.value = done
 						// console.log('data2222', uuid, done)
-            console.log('data2', uuid, lastText + chunk2, 'sdsd')
+            // console.log('data2', uuid, lastText + chunk2, 'sdsd')
 						loading.value = !done
             updateChat(
               +uuid,
@@ -904,6 +922,7 @@ onUnmounted(() => {
           id="image-wrapper" class="w-full max-w-screen-xl m-auto dark:bg-[#101014]"
           :class="[isMobile ? 'p-2' : 'p-4']"
         >
+					<div class="model-class" v-if="showGpt4 && dataSources.length">模型：{{modelText}}</div>
           <template v-if="!dataSources.length">
             <div class="flex items-center justify-center mt-4 text-center text-neutral-300">
               <commonPage />
@@ -933,19 +952,16 @@ onUnmounted(() => {
       </div>
       <NForm  inline :label-width="80" :model="precessForm">
         <NGrid cols="10 400:12 600:24" :x-gap="12" responsive="self" :item-responsive="true">
-					<div v-if="userInfo && userInfo.equities !== null && userInfo.equities.gpt4">
-						<NFormItemGi :span="3" offset="3" label="模型" path="precessForm.model" class="prompt-box">
-							<NSelect v-model:value="precessForm.model" placeholder="请选择" :options="modelList" value-field="value" />
-						</NFormItemGi>
-						<NFormItemGi :span="4" label="输出语言" path="precessForm.languge" class="prompt-box">
-							<NSelect v-model:value="precessForm.languge" placeholder="请选择" :options="langugeList" value-field="value" />
-						</NFormItemGi>
-					</div>
-					<div v-if="!(userInfo && userInfo.equities && userInfo.equities.gpt4)">
-						<NFormItemGi :span="4" offset="3" label="输出语言" path="precessForm.languge" class="prompt-box">
-							<NSelect v-model:value="precessForm.languge" placeholder="请选择" :options="langugeList" value-field="value" />
-						</NFormItemGi>
-					</div>
+					<NFormItemGi v-if="showGpt4" :span="3" offset="3" label="模型" path="precessForm.model" class="prompt-box">
+						<NSelect v-model:value="precessForm.model" placeholder="请选择" :options="vipModelList" value-field="value" />
+					</NFormItemGi>
+					<NFormItemGi v-if="showGpt4" :span="4" label="输出语言" path="precessForm.languge" class="prompt-box">
+						<NSelect v-model:value="precessForm.languge" placeholder="请选择" :options="langugeList" value-field="value" />
+					</NFormItemGi>
+					<NFormItemGi v-if="!showGpt4"
+											 :span="4" offset="4" label="输出语言" path="precessForm.languge" class="prompt-box">
+						<NSelect v-model:value="precessForm.languge" placeholder="请选择" :options="langugeList" value-field="value" />
+					</NFormItemGi>
           <NFormItemGi :span="4" label="语气" path="precessForm.tone">
             <NSelect v-model:value="precessForm.tone" placeholder="请选择" :options="toneList" value-field="value" />
           </NFormItemGi>
@@ -1050,5 +1066,15 @@ onUnmounted(() => {
   text-align: center;
   border-radius: 4px;
   cursor: pointer;
+}
+.model-class {
+	width: 100%;
+	--tw-text-opacity: 1;
+	color: rgba(142,142,160,var(--tw-text-opacity));
+	background-color: rgba(247,247,248,var(--tw-text-opacity));
+	text-align: center;
+	height: 30px;
+	line-height: 30px;
+	margin-bottom: 10px;
 }
 </style>
